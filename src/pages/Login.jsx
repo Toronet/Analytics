@@ -7,7 +7,9 @@ import { Title, Text, Card, Stack, Button, TextInput, PasswordInput, createStyle
 import brand from '../assets/toronet-alt.png';
 
 import { loginUser, verifyUser } from '../services/auth';
-import { showError, storage_key, session } from '../helpers/app';
+import { showError, storage_key } from '../helpers/app';
+
+//@: 0x160166dbc33c0cdcd8a3898635d39c729204548d
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     container: {
@@ -35,7 +37,7 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
         height: '4rem',
         objectFit: 'contain',
         margin: '0 auto',
-        filter: 'grayscale(1)',
+        //filter: 'grayscale(1)',
     }
 }));
 

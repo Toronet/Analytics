@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { IconHome2, IconCash, IconChartAreaLine, IconCoin } from '@tabler/icons';
-import { AppShell, Navbar, Group, Title, Text, ScrollArea, createStyles, useMantineTheme } from '@mantine/core';
+import { AppShell, Navbar, Group, Title, Text, ScrollArea, createStyles, MediaQuery, Burger, useMantineTheme } from '@mantine/core';
 
 import brand from '../assets/toronet-alt.png';
 
@@ -56,6 +56,8 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
 }))
 
 const Layout = ({children, title}) => {
+    const [opened, setOpened] = useState(false);
+
     const { classes, cx } = useStyles();
     const theme = useMantineTheme();
     const location = useLocation();
@@ -67,7 +69,7 @@ const Layout = ({children, title}) => {
             padding="xl"
             navbarOffsetBreakpoint="lg"
             navbar={
-                <Navbar width={{ base: 300 }} hiddenBreakpoint="lg" hidden>
+                <Navbar width={{ base: 300 }} hiddenBreakpoint="lg" hidden={!opened}>
                     <Navbar.Section p="md">
                         <img className={classes.brand} src={brand} alt="toronet" />
                     </Navbar.Section>
@@ -126,7 +128,19 @@ const Layout = ({children, title}) => {
             })}
         >
             <header className={classes.header}>
-                <Title order={2} color={theme.colors.gray[8]}>{title}</Title>
+                <Group>
+                    <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
+                        <Burger
+                            opened={opened}
+                            onClick={() => setOpened((o) => !o)}
+                            size="sm"
+                            color={theme.colors.gray[6]}
+                            mr="xl"
+                        />
+                    </MediaQuery>
+
+                    <Title order={2} color={theme.colors.gray[8]}>{title}</Title>
+                </Group>
             </header>
 
             {children}

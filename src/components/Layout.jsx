@@ -128,7 +128,11 @@ const Layout = ({children, title}) => {
             })}
         >
             <header className={classes.header}>
-                <Group>
+                <Group position='apart'>
+                    <Title order={2} color={theme.colors.gray[8]}>
+                        {title}
+                    </Title>
+
                     <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
                         <Burger
                             opened={opened}
@@ -138,8 +142,6 @@ const Layout = ({children, title}) => {
                             mr="xl"
                         />
                     </MediaQuery>
-
-                    <Title order={2} color={theme.colors.gray[8]}>{title}</Title>
                 </Group>
             </header>
 

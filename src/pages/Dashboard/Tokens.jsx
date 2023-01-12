@@ -42,7 +42,7 @@ const Tokens = () => {
     const theme = useMantineTheme();
     const { classes, cx } = useStyles();
 
-    const [days, setDays] = useState('7');
+    const [days, setDays] = useState('30');
     const [hours, setHours] = useState('12');
     const [months, setMonths] = useState('3');
 
@@ -127,7 +127,7 @@ const Tokens = () => {
                                 {hourlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                Total hourly transactions
+                                hourly transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total count of espees transactions in the past {hours} hours
@@ -148,7 +148,7 @@ const Tokens = () => {
                                 {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
-                                Total daily transactions
+                                daily transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total count of espees transactions in the past {days} days.
@@ -169,7 +169,7 @@ const Tokens = () => {
                                 {monthlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
-                                Total monthly transactions
+                                monthly transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total count of espees transactions in the past {months} months

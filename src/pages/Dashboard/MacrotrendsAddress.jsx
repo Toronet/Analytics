@@ -36,6 +36,11 @@ const useStyles = createStyles((theme) => ({
         objectFit: 'contain',
         filter: 'grayscale(1)',
         opacity: '.5'
+    },
+    divider: {
+        width: '80%',
+        height: '1px',
+        backgroundColor: theme.colors.gray[1]
     }
 }))
 
@@ -48,7 +53,7 @@ const MacrotrendsAddress = () => {
     const form = useForm({
         initialValues: {
             addr: '',
-            startDate: '',
+            startDate: new Date('2022-08-01'),
             endDate: new Date(),
         },
         validate: {
@@ -168,14 +173,25 @@ const MacrotrendsAddress = () => {
                                 <div className={classes.icons}>
                                     <IconCalendarStats color={theme.colors.green[7]} />
                                 </div>
-                                <Title order={2} weight={900} color={theme.colors.green[7]}>
-                                    {totalCountSums.data && totalCountSums.data.data[0].Count?.toLocaleString()}
-                                </Title>
-                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                    Count & Sum
-                                </Title>
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Transaction Count
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {totalCountSums.data && totalCountSums.data.data[0].Count?.toLocaleString()}
+                                    </Title>
+                                </div>
+                                <div className={classes.divider} />
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Transaction Sum
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {totalCountSums.data && totalCountSums.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
+                                    </Title>
+                                </div>
                                 <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count of transactions for the selected date range.
+                                    Total count & sum of transactions for the selected date range.
                                 </Text>
                             </Stack>
 
@@ -188,14 +204,25 @@ const MacrotrendsAddress = () => {
                                 <div className={classes.icons}>
                                     <IconCalendarStats color={theme.colors.green[7]} />
                                 </div>
-                                <Title order={2} weight={900} color={theme.colors.green[7]}>
-                                    {deposits.data && deposits.data.data[0].Count?.toLocaleString()}
-                                </Title>
-                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                    Deposits
-                                </Title>
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Deposit count
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {deposits.data && deposits.data.data[0].Count?.toLocaleString()}
+                                    </Title>
+                                </div>
+                                <div className={classes.divider} />
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Deposit sum
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {deposits.data && deposits.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
+                                    </Title>
+                                </div>
                                 <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count of transactions for the selected date range.
+                                    Total count & sum of deposits for the selected date range.
                                 </Text>
                             </Stack>
 
@@ -208,14 +235,25 @@ const MacrotrendsAddress = () => {
                                 <div className={classes.icons}>
                                     <IconCalendarStats color={theme.colors.green[7]} />
                                 </div>
-                                <Title order={2} weight={900} color={theme.colors.green[7]}>
-                                    {withdrawals.data && withdrawals.data.data[0].Count?.toLocaleString()}
-                                </Title>
-                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                    Withdrawals
-                                </Title>
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Withdrawal count
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {withdrawals.data && withdrawals.data.data[0].Count?.toLocaleString()}
+                                    </Title>
+                                </div>
+                                <div className={classes.divider} />
+                                <div>
+                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                        Withdrawal sum
+                                    </Title>
+                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                        {withdrawals.data && withdrawals.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
+                                    </Title>
+                                </div>
                                 <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count of transactions for the selected date range.
+                                    Total count & sum of withdrawals for the selected date range.
                                 </Text>
                             </Stack>
 

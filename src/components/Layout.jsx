@@ -101,7 +101,7 @@ const Layout = ({children, title}) => {
                                     <IconCoin size={theme.spacing.lg} /> 
                                 </div>
                                 <Text weight={'/dashboard/tokens' === currentRoute ? 600 : 500}>
-                                    Tokens activity
+                                    Tokens
                                 </Text>  
                             </Group> 
                         </Link> 

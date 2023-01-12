@@ -114,7 +114,7 @@ const Macrotrends = () => {
                                 {totalCount.data && totalCount.data.data && totalCount.data.data[0].Count?.toLocaleString()}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                Total transaction count
+                                transaction count
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total count of transactions for the selected date range.
@@ -143,7 +143,7 @@ const Macrotrends = () => {
                                 {totalCountEsps.data && totalCountEsps.data.data && totalCountEsps.data.data[0].Count?.toLocaleString()}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                Total esps transaction count
+                                espees transaction count
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total count of espees transactions for the selected date range.
@@ -172,7 +172,7 @@ const Macrotrends = () => {
                                 {totalSumEsps.data && totalSumEsps.data.data && totalSumEsps.data.data[0].Sum?.toLocaleString()}
                             </Title>
                             <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                Total esps transaction sum
+                                espees transaction sum
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
                                 Total sum of espees transactions for the selected date range.

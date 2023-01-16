@@ -35,35 +35,41 @@ const TransactionsAddress = () => {
     const [days, setDays] = useState('7');
     const [hours, setHours] = useState('12');
     const [months, setMonths] = useState('3');
+    const [ready, setReady] = useState(false);
 
     const { classes } = useStyles();
     const theme = useMantineTheme();
 
+    React.useEffect(() => {
+        if(!addr.length) setReady(false);
+    },[addr]);
+
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
             {
-                queryKey: ['day-addr-tnx'], 
+                queryKey: ['day-addr-tnx', addr, days], 
                 queryFn: () => getDailyAddrTransactions({addr, count: Number(days)}),
-                enabled: false
+                enabled: !!addr && !!days && ready,
+                refetchOnWindowFocus: false
             },
             {
-                queryKey: ['hour-addr-tnx'], 
+                queryKey: ['hour-addr-tnx', addr, hours], 
                 queryFn: () => getHourlyAddrTransactions({addr, count: Number(hours)}),
-                enabled: false
+                enabled: !!addr && !!hours && ready,
+                refetchOnWindowFocus: false
             },
             {
-                queryKey: ['month-addr-tnx'], 
+                queryKey: ['month-addr-tnx', addr, months], 
                 queryFn: () => getMonthlyAddrTransactions({addr, count: Number(months)}),
-                enabled: false
+                enabled: !!addr && !!months && ready,
+                refetchOnWindowFocus: false
             },
         ]
     });
 
     const handleSubmit = () => {
         if(!addr.length) return;
-        dailyData.refetch();
-        hourlyData.refetch();
-        monthlyData.refetch();
+        setReady(true);
     }
 
     const dailyAxisData = () => {

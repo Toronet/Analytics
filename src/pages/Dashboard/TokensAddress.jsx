@@ -35,35 +35,38 @@ const TokensAddress = () => {
     const [days, setDays] = useState('7');
     const [hours, setHours] = useState('12');
     const [months, setMonths] = useState('3');
+    const [ready, setReady] = useState(false);
 
     const { classes } = useStyles();
     const theme = useMantineTheme();
 
+    React.useEffect(() => {
+        if(!addr.length) setReady(false);
+    },[addr]);
+
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
             {
-                queryKey: ['day-esps-addr-tnx'], 
+                queryKey: ['day-esps-addr-tnx', addr, days], 
                 queryFn: () => getDailyEspeesAddrTransactions({addr, count: Number(days)}),
-                enabled: false
+                enabled: !!addr && !!days && ready,
             },
             {
-                queryKey: ['hour-esps-addr-tnx'], 
+                queryKey: ['hour-esps-addr-tnx', addr, hours], 
                 queryFn: () => getHourlyEspeesAddrTransactions({addr, count: Number(hours)}),
-                enabled: false
+                enabled: !!addr && !!hours && ready,
             },
             {
-                queryKey: ['month-esps-addr-tnx'], 
+                queryKey: ['month-esps-addr-tnx', addr, months], 
                 queryFn: () => getMonthlyEspeesAddrTransactions({addr, count: Number(months)}),
-                enabled: false
+                enabled: !!addr && !!months && ready,
             },
         ]
     });
 
     const handleSubmit = () => {
         if(!addr.length) return;
-        dailyData.refetch();
-        hourlyData.refetch();
-        monthlyData.refetch();
+       setReady(true)
     }
 
     const dailyAxisData = () => {

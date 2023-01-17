@@ -90,7 +90,9 @@ const Macrotrends = () => {
                 </Button>
             </Group>
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Macrotrends ? What are they ?" color="gray" radius="md">
-                Get information on a variety of macrotrends specific to your Toronet address. From user activity to global and Espees transactions.
+                Get information on a variety of macrotrends specific to your 
+                Toronet address. From user activity to global and Espees 
+                transactions.
             </Alert>
 
             <Grid>

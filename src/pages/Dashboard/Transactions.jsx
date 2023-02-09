@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { useQueries } from '@tanstack/react-query';
+import { useForm } from '@mantine/form';
+import { DatePicker } from '@mantine/dates';
+import { useQueries, useMutation } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IconCalendarStats, IconAlertCircle, IconCalendarTime, IconCalendar, IconSearch } from '@tabler/icons';
-import { Grid, Card, Stack, Title, Text, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
+import { Grid, Card, Stack, Title, Space, Text, NumberInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
 
 import Layout from '../../components/Layout';
 import DailyChart from '../../components/Reports/DailyReport';
 import HourlyReport from '../../components/Reports/HourlyReport';
 import MonthlyReport from '../../components/Reports/MonthlyReport';
 
-import { getDailyTransactions, getHourlyTransactions, getMonthlyTransactions } from '../../services/transactions';
+import empty from '../../assets/empty.png';
+
+import { getDailyTransactions, getHourlyTransactions, getMonthlyTransactions, getTransactionsCountByRange } from '../../services/transactions';
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     icons: {
@@ -33,6 +37,20 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
     card: {
         minHeight: 300,
         position: 'relative'
+    },
+    emptyWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative'
+    },
+    empty: {
+        width: theme.spacing.xl * 8,
+        height: theme.spacing.xl * 8,
+        objectFit: 'contain',
+        filter: 'grayscale(1)',
+        opacity: '.5'
     }
 }));
 
@@ -45,6 +63,19 @@ const Transactions = () => {
     const [days, setDays] = useState('30');
     const [hours, setHours] = useState('12');
     const [months, setMonths] = useState('3');
+
+    const form = useForm({
+        initialValues: {
+            startDate: new Date('2022-08-01'),
+            endDate: new Date(),
+        },
+        validate: {
+            startDate: (value) => (value ? null : 'Start date is required'),
+            endDate: (value) => (value ? null : 'End date is required'),
+            amountStart: (value) => ((value || value === 0) ? null : "Start range is required"),
+            amountEnd: (value) => (value ? null : "End range is required")
+        }
+    });
 
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
@@ -65,6 +96,17 @@ const Transactions = () => {
             },
         ]
     });
+
+    const mutation = useMutation({
+        mutationFn: (payload) => getTransactionsCountByRange(payload),
+        onError: (error) => {},
+        onSuccess: (data) => {},
+        retry: 3,
+    });
+
+    const handleFormSubmit = (values) => {
+        mutation.mutate(values);
+    }
 
     const dailyAxisData = () => {
         if(dailyData.data){
@@ -105,12 +147,99 @@ const Transactions = () => {
     return (
         <Layout title="Global transactions">
             <Group mb="xl" position='right'>
-                <Button onClick={() => navigate(`${location.pathname}/address`)} leftIcon={<IconSearch size={18} />} size="md" variant='filled'>
+                <Button onClick={() => navigate(`${location.pathname}/address`)} leftIcon={<IconSearch size={18} />} size="md" variant='outline'>
                     <Text size="sm">Search by address</Text>
                 </Button>
             </Group>
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
+                Get access to transaction data for specific dates by Toro range. Simply select the start and end dates
+                you want to query as well as an amount range in Toro's. We'll handle the rest. 
+            </Alert>
+            <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
+                <Grid mt={theme.spacing.xl * 2}>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <DatePicker 
+                            withAsterisk 
+                            dropdownPosition="bottom-start"
+                            placeholder='Please select a start date'
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Start date
+                                </Text>
+                            } 
+                            size="md" 
+                            {...form.getInputProps('startDate')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <DatePicker 
+                            withAsterisk 
+                            dropdownPosition="bottom-start"
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    End date
+                                </Text>
+                            } 
+                            size="md" 
+                            {...form.getInputProps('endDate')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <NumberInput
+                            withAsterisk
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Amount in Toro's to start 
+                                </Text>
+                            }  
+                            size="md"
+                            min={0}
+                            placeholder=''
+                            {...form.getInputProps('amountStart')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <NumberInput 
+                            withAsterisk
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Amount in Toro's to end 
+                                </Text>
+                            }  
+                            size="md"
+                            placeholder=''
+                            {...form.getInputProps('amountEnd')} 
+                        />
+                    </Grid.Col>
+                </Grid>    
+                <Group mt="lg" position='right'>
+                    <Button type="submit" leftIcon={<IconSearch size={18} />} loading={mutation.status === 'loading'} size="md" variant='filled'>
+                        <Text size="sm">Search by range</Text>
+                    </Button>
+                </Group>
+            </form>
 
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Realtime Updates" color="gray" radius="md">
+            {(mutation.data && mutation.status !== 'loading') ? (
+                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                    <Text align="center" size="md" color={theme.colors.gray[7]}>
+                        {mutation.data.message}
+                    </Text>
+                    <Space h={30} />
+
+                    Transaction count is: <Text size={theme.fontSizes.lg * 1.8} weight={800} color={theme.colors.pink[7]}>{mutation.data.data[0].Count?.toLocaleString()}</Text>
+                </Card>
+            ) : (
+                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                    <img className={classes.empty} src={empty} alt="empty" />
+                    <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No data!</Title>
+                    <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
+                        We could not find any data matching your results. 
+                        Please check your query and try again.
+                    </Text>
+                </Card>
+            )}
+
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mt={theme.spacing.xl * 1.5} mb="xl" title="Realtime Updates" color="gray" radius="md">
                 All transactions listed are polled every minute per session. This keeps your 
                 Toronet metrics & performance data accurate at any giving time.
             </Alert>
@@ -263,6 +392,8 @@ const Transactions = () => {
                     )}
                 </Card>
             </article>
+
+            
         </Layout>
     )
 }

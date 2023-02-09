@@ -108,10 +108,13 @@ const TokensAddress = () => {
     return (
         <Layout title="Espees transaction detail">
             <Group mb="xl" position='right'>
-                <TextInput sx={{width: '40%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
-                <Button onClick={handleSubmit} leftIcon={<IconSearch size={18} />} size="md">
-                    <Text size="sm">Search</Text>
-                </Button>
+                
+                <div>
+                    <TextInput sx={{width: '40%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
+                    <Button onClick={handleSubmit} leftIcon={<IconSearch size={18} />} size="md">
+                        <Text size="sm">Search</Text>
+                    </Button>
+                </div>
             </Group>
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Realtime Updates" color="gray" radius="md">
                 All transactions listed are polled every minute per session. This keeps your 

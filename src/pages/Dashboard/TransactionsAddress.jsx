@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
+import { useForm } from '@mantine/form';
+import { DatePicker } from '@mantine/dates';
 import { useQueries } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { IconCalendarStats, IconAlertCircle, IconCalendarTime, IconCalendar, IconSearch } from '@tabler/icons';
-import { Grid, Card, Stack, Title, Text, TextInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
+import { IconAlertCircle, IconSearch } from '@tabler/icons';
+import { Grid, Card, Title, Text, NumberInput, TextInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
 
 import Layout from '../../components/Layout';
 import DailyChart from '../../components/Reports/DailyReport';
@@ -22,8 +23,8 @@ const useStyles = createStyles((theme) => ({
         position: 'relative'
     },
     empty: {
-        width: theme.spacing.xl * 15,
-        height: theme.spacing.xl * 10,
+        width: theme.spacing.xl * 8,
+        height: theme.spacing.xl * 8,
         objectFit: 'contain',
         filter: 'grayscale(1)',
         opacity: '.5'
@@ -43,6 +44,15 @@ const TransactionsAddress = () => {
     React.useEffect(() => {
         if(!addr.length) setReady(false);
     },[addr]);
+
+    const form = useForm({
+        initialValues: {
+            startDate: "",
+            endDate: "",
+            startRange: 0,
+            endRange: 5,
+        }
+    })
 
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
@@ -108,6 +118,8 @@ const TransactionsAddress = () => {
         else return []
     }
 
+    const handleFormSubmit = () => {}
+
     return (
         <Layout title="Transaction detail">
             <Group mb="xl" position='right'>
@@ -154,8 +166,8 @@ const TransactionsAddress = () => {
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
                             <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No hourly data!</Title>
-                            <Text size="sm" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
+                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
                             </Text>
 
                             {hourlyData.fetchStatus === "fetching" && (
@@ -197,8 +209,8 @@ const TransactionsAddress = () => {
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
                             <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No daily data!</Title>
-                            <Text size="sm" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
+                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
                             </Text>
 
                             {dailyData.fetchStatus === 'fetching' && (
@@ -240,8 +252,8 @@ const TransactionsAddress = () => {
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
                             <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No monthly data!</Title>
-                            <Text size="sm" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
+                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
                             </Text>
 
                             {monthlyData.fetchStatus === 'fetching' && (

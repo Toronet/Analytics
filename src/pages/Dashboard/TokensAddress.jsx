@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import { useQueries } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { IconCalendarStats, IconAlertCircle, IconCalendarTime, IconCalendar, IconSearch } from '@tabler/icons';
-import { Grid, Card, Stack, Title, Text, TextInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { DatePicker } from '@mantine/dates';
+import { useQueries, useMutation } from '@tanstack/react-query';
+import { IconAlertCircle, IconSearch } from '@tabler/icons';
+import { Grid, Card, Title, Text, NumberInput, Space, TextInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
 
 import Layout from '../../components/Layout';
 import DailyChart from '../../components/Reports/DailyReport';
@@ -11,7 +12,7 @@ import MonthlyReport from '../../components/Reports/MonthlyReport';
 
 import empty from '../../assets/empty.png';
 
-import { getDailyEspeesAddrTransactions, getHourlyEspeesAddrTransactions, getMonthlyEspeesAddrTransactions } from '../../services/transactions';
+import { getDailyEspeesAddrTransactions, getHourlyEspeesAddrTransactions, getMonthlyEspeesAddrTransactions, getEspeesAddrTransactionsCountByRange } from '../../services/transactions';
 
 const useStyles = createStyles((theme) => ({
     emptyWrapper: {
@@ -22,8 +23,8 @@ const useStyles = createStyles((theme) => ({
         position: 'relative'
     },
     empty: {
-        width: theme.spacing.xl * 15,
-        height: theme.spacing.xl * 10,
+        width: theme.spacing.xl * 8,
+        height: theme.spacing.xl * 8,
         objectFit: 'contain',
         filter: 'grayscale(1)',
         opacity: '.5'
@@ -43,6 +44,21 @@ const TokensAddress = () => {
     React.useEffect(() => {
         if(!addr.length) setReady(false);
     },[addr]);
+
+    const form = useForm({
+        initialValues: {
+            addr: "",
+            startDate: new Date('2022-08-01'),
+            endDate: new Date(),
+        },
+        validate: {
+            addr: (value) => (value ? null : 'Toronet address is required'),
+            startDate: (value) => (value ? null : 'Start date is required'),
+            endDate: (value) => (value ? null : 'End date is required'),
+            amountStart: (value) => ((value || value === 0) ? null : "Start range is required"),
+            amountEnd: (value) => (value ? null : "End range is required")
+        }
+    })
 
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
@@ -64,9 +80,20 @@ const TokensAddress = () => {
         ]
     });
 
+    const mutation = useMutation({
+        mutationFn: (payload) => getEspeesAddrTransactionsCountByRange(payload),
+        onError: (error) => {},
+        onSuccess: (data) => {},
+        retry: 3,
+    });
+
     const handleSubmit = () => {
         if(!addr.length) return;
        setReady(true)
+    }
+
+    const handleFormSubmit = (values) => {
+        mutation.mutate(values);
     }
 
     const dailyAxisData = () => {
@@ -107,19 +134,112 @@ const TokensAddress = () => {
 
     return (
         <Layout title="Espees transaction detail">
-            <Group mb="xl" position='right'>
-                
-                <div>
-                    <TextInput sx={{width: '40%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
-                    <Button onClick={handleSubmit} leftIcon={<IconSearch size={18} />} size="md">
-                        <Text size="sm">Search</Text>
-                    </Button>
-                </div>
-            </Group>
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Realtime Updates" color="gray" radius="md">
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
+                Get access to Espees transaction data for a specific toronet address by dates and Espees range. Simply select the start and end dates
+                you want to query as well as an amount range in Espees. We'll handle the rest. 
+            </Alert>
+            <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
+                <Grid mt={theme.spacing.xl * 2}>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <DatePicker 
+                            withAsterisk 
+                            dropdownPosition="bottom-start"
+                            placeholder='Please select a start date'
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Start date
+                                </Text>
+                            } 
+                            size="md" 
+                            {...form.getInputProps('startDate')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <DatePicker 
+                            withAsterisk 
+                            dropdownPosition="bottom-start"
+                            placeholder='Please select an end date'
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    End date
+                                </Text>
+                            } 
+                            size="md" 
+                            {...form.getInputProps('endDate')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <NumberInput
+                            withAsterisk
+                            placeholder="Start range"
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Amount in Espees to start 
+                                </Text>
+                            }  
+                            size="md"
+                            min={0}
+                            {...form.getInputProps('amountStart')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <NumberInput 
+                            withAsterisk
+                            label={
+                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
+                                    Amount in Espees to end 
+                                </Text>
+                            }  
+                            size="md"
+                            placeholder='End range'
+                            {...form.getInputProps('amountEnd')} 
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={9} lg={9} md={9}>
+                        <TextInput 
+                            size="md" 
+                            placeholder='Enter a valid Toronet address'
+                            {...form.getInputProps('addr')}
+                        />
+                    </Grid.Col>
+                    <Grid.Col xl={3} lg={3} md={3}>
+                        <Button fullWidth type="submit" leftIcon={<IconSearch size={18} />} loading={mutation.status === 'loading'} size="md" variant='filled'>
+                            <Text size="sm">Search by range</Text>
+                        </Button>
+                    </Grid.Col>
+                </Grid>    
+            </form>
+
+            {(mutation.data && mutation.status !== 'loading') ? (
+                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                    <Text align="center" size="md" color={theme.colors.gray[7]}>
+                        {mutation.data.message}
+                    </Text>
+                    <Space h={30} />
+
+                    Transaction count is: <Text size={theme.fontSizes.lg * 1.8} weight={800} color={theme.colors.pink[7]}>{mutation.data.data[0].Count?.toLocaleString()}</Text>
+                </Card>
+            ) : (
+                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                    <img className={classes.empty} src={empty} alt="empty" />
+                    <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No data!</Title>
+                    <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
+                        We could not find any data matching your results. 
+                        Please check your query and try again.
+                    </Text>
+                </Card>
+            )}
+
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mt={theme.spacing.xl * 3} mb="xl" title="Realtime Updates" color="gray" radius="md">
                 All transactions listed are polled every minute per session. This keeps your 
                 Toronet metrics & performance data accurate at any giving time.
             </Alert>
+            <Group mb="xl" position='right'>
+                <TextInput sx={{width: '40%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
+                <Button onClick={handleSubmit} leftIcon={<IconSearch size={18} />} size="md">
+                    <Text size="sm">Search</Text>
+                </Button>
+            </Group>
            
             <React.Fragment>
                 <article className={classes.section}>

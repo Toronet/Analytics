@@ -152,8 +152,8 @@ const Tokens = () => {
                 </Button>
             </Group>
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
-                Get access to Espees transaction data for specific dates by Toro range. Simply select the start and end dates
-                you want to query as well as an amount range in Toro's. We'll handle the rest. 
+                Get access to Espees transaction data for specific dates by Espees range. Simply select the start and end dates
+                you want to query as well as an amount range in Espees. We'll handle the rest. 
             </Alert>
 
             <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>

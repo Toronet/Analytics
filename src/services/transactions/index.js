@@ -44,6 +44,12 @@ export const getMonthlyAddrTransactions = async (payload) => {
     return res.data
 }
 
+export const getAddrTransactionsCountByRange = async (payload) => {
+    const op = 'gettransactioncounts_amountrange_address';
+    const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=startdate&params[0][value]=${payload.startDate}&params[1][name]=enddate&params[1][value]=${payload.endDate}&params[2][name]=rangestart&params[2][value]=${payload.amountStart}&params[3][name]=rangeend&params[3][value]=${payload.amountEnd}&params[4][name]=addr&params[4][value]=${payload.addr}`);
+    return res.data
+}
+
 //@: Token transactions
 export const getDailyEspeesTransactions = async (count) => {
     const op = 'getdailytransactioncounts_espees';
@@ -85,5 +91,11 @@ export const getHourlyEspeesAddrTransactions = async (payload) => {
 export const getMonthlyEspeesAddrTransactions = async (payload) => {
     const op = 'getmonthlytransactioncounts_espees_address';
     const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=addr&params[0][value]=${payload.addr}&params[1][name]=count&params[1][value]=${payload.count}`);
+    return res.data
+}
+
+export const getEspeesAddrTransactionsCountByRange = async (payload) => {
+    const op = 'gettransactioncounts_amountrange_address_espees';
+    const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=startdate&params[0][value]=${payload.startDate}&params[1][name]=enddate&params[1][value]=${payload.endDate}&params[2][name]=rangestart&params[2][value]=${payload.amountStart}&params[3][name]=rangeend&params[3][value]=${payload.amountEnd}&params[4][name]=addr&params[4][value]=${payload.addr}`);
     return res.data
 }

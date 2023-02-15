@@ -14,6 +14,7 @@ import { getRecentTransactions } from '../../services/transactions';
 const useStyles = createStyles((theme, _params, _getRef) => ({
     section: {
         margin: `${theme.spacing.xl * 2}px 0`,
+        position: "relative"
     },
     divider: {
         width: '100%',
@@ -102,7 +103,7 @@ const Dashboard = () => {
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Toro</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>
-                                {Number(balances?.data?.bal_toro)?.toFixed(2)}
+                                {Number(balances?.data?.bal_toro)?.toFixed(2) || ''}
                             </Title>
                         </Card>
                     </Grid.Col>
@@ -110,7 +111,7 @@ const Dashboard = () => {
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Espees</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>
-                                {Number(balances?.data?.bal_espees)?.toFixed(2)}
+                                {Number(balances?.data?.bal_espees)?.toFixed(2) || ''}
                             </Title>
                         </Card>
                     </Grid.Col>
@@ -118,11 +119,15 @@ const Dashboard = () => {
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Plast</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>
-                                {Number(balances?.data?.bal_plast)?.toFixed(2)}
+                                {Number(balances?.data?.bal_plast)?.toFixed(2) || ''}
                             </Title>
                         </Card>
                     </Grid.Col>
                 </Grid>
+
+                {balances.status === 'loading' && (
+                    <LoadingOverlay visible overlayBlur={2} />
+                )} 
             </div>
 
             <div className={classes.section}>

@@ -25,6 +25,12 @@ export const getTransactionsCountByRange = async (payload) => {
     return res.data
 }
 
+export const getRecentTransactions = async (addr) => {
+    const op = 'getaddrtransactions';
+    const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=addr&params[0][value]=${addr}&params[1][name]=count&params[1][value]=${5}`);
+    return res.data
+}
+
 //@: Transactions by address
 export const getDailyAddrTransactions = async (payload) => {
     const op = 'getdailytransactioncounts_address';

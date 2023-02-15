@@ -85,26 +85,52 @@ const Layout = ({children, title}) => {
                                 </Text>  
                             </Group> 
                         </Link> 
-                        <Link to="/dashboard/transactions" className={cx(classes.link, {[classes.linkActive]: '/dashboard/transactions' === currentRoute})}>
+
+                        <Text tt="uppercase" className={classes.link}>Transactions</Text>
+                        <Link to="/dashboard/transactions/global" className={cx(classes.link, {[classes.linkActive]: '/dashboard/transactions/global' === currentRoute})}>
                             <Group align="center">
-                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/transactions' === currentRoute})}>
+                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/transactions/global' === currentRoute})}>
                                     <IconCash size={theme.spacing.lg} /> 
                                 </div>
-                                <Text weight={'/dashboard/transactions' === currentRoute ? 600 : 500}>
-                                    Transactions
+                                <Text weight={'/dashboard/transactions/global' === currentRoute ? 600 : 500}>
+                                    Global
                                 </Text>  
                             </Group> 
                         </Link> 
-                        <Link to="/dashboard/tokens" className={cx(classes.link, {[classes.linkActive]: '/dashboard/tokens' === currentRoute})}>
+                        <Link to="/dashboard/transactions/espees" className={cx(classes.link, {[classes.linkActive]: '/dashboard/transactions/espees' === currentRoute})}>
                             <Group align="center">
-                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/tokens' === currentRoute})}>
-                                    <IconCoin size={theme.spacing.lg} /> 
+                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/transactions/espees' === currentRoute})}>
+                                    <IconCash size={theme.spacing.lg} /> 
                                 </div>
-                                <Text weight={'/dashboard/tokens' === currentRoute ? 600 : 500}>
-                                    Tokens
+                                <Text weight={'/dashboard/transactions/espees' === currentRoute ? 600 : 500}>
+                                    Espees
+                                </Text>  
+                            </Group> 
+                        </Link>
+
+                        <Text tt="uppercase" className={classes.link}>Distribution</Text>
+                        <Link to="/dashboard/distribution/global" className={cx(classes.link, {[classes.linkActive]: '/dashboard/distribution/global' === currentRoute})}>
+                            <Group align="center">
+                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/distribution/global' === currentRoute})}>
+                                    <IconCash size={theme.spacing.lg} /> 
+                                </div>
+                                <Text weight={'/dashboard/distribution/global' === currentRoute ? 600 : 500}>
+                                    Global
                                 </Text>  
                             </Group> 
                         </Link> 
+                        <Link to="/dashboard/distribution/espees" className={cx(classes.link, {[classes.linkActive]: '/dashboard/distribution/espees' === currentRoute})}>
+                            <Group align="center">
+                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/distribution/espees' === currentRoute})}>
+                                    <IconCash size={theme.spacing.lg} /> 
+                                </div>
+                                <Text weight={'/dashboard/distribution/espees' === currentRoute ? 600 : 500}>
+                                    Espees
+                                </Text>  
+                            </Group> 
+                        </Link>
+
+                        <Text tt="uppercase" className={classes.link}>Macrotrends</Text>
                         <Link to="/dashboard/macrotrends" className={cx(classes.link, {[classes.linkActive]: '/dashboard/macrotrends' === currentRoute})}>
                             <Group align="center">
                                 <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/macrotrends' === currentRoute})}>

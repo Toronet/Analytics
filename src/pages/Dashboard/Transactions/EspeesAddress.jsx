@@ -5,14 +5,14 @@ import { useQueries, useMutation } from '@tanstack/react-query';
 import { IconAlertCircle, IconSearch } from '@tabler/icons';
 import { Grid, Card, Title, Text, NumberInput, Space, TextInput, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
 
-import Layout from '../../components/Layout';
-import DailyChart from '../../components/Reports/DailyReport';
-import HourlyReport from '../../components/Reports/HourlyReport';
-import MonthlyReport from '../../components/Reports/MonthlyReport';
+import Layout from '../../../components/Layout';
+import DailyChart from '../../../components/Reports/DailyReport';
+import HourlyReport from '../../../components/Reports/HourlyReport';
+import MonthlyReport from '../../../components/Reports/MonthlyReport';
 
-import empty from '../../assets/empty.png';
+import empty from '../../../assets/empty.png';
 
-import { getAddrTransactionsCountByRange, getDailyAddrTransactions, getHourlyAddrTransactions, getMonthlyAddrTransactions } from '../../services/transactions';
+import { getDailyEspeesAddrTransactions, getHourlyEspeesAddrTransactions, getMonthlyEspeesAddrTransactions, getEspeesAddrTransactionsCountByRange } from '../../../services/transactions';
 
 const useStyles = createStyles((theme) => ({
     emptyWrapper: {
@@ -31,7 +31,7 @@ const useStyles = createStyles((theme) => ({
     }
 }))
 
-const TransactionsAddress = () => {
+const EspeesAddress = () => {
     const [addr, setAddr] = useState('');
     const [days, setDays] = useState('7');
     const [hours, setHours] = useState('12');
@@ -63,28 +63,25 @@ const TransactionsAddress = () => {
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
             {
-                queryKey: ['day-addr-tnx', addr, days], 
-                queryFn: () => getDailyAddrTransactions({addr, count: Number(days)}),
+                queryKey: ['day-esps-addr-tnx', addr, days], 
+                queryFn: () => getDailyEspeesAddrTransactions({addr, count: Number(days)}),
                 enabled: !!addr && !!days && ready,
-                refetchOnWindowFocus: false
             },
             {
-                queryKey: ['hour-addr-tnx', addr, hours], 
-                queryFn: () => getHourlyAddrTransactions({addr, count: Number(hours)}),
+                queryKey: ['hour-esps-addr-tnx', addr, hours], 
+                queryFn: () => getHourlyEspeesAddrTransactions({addr, count: Number(hours)}),
                 enabled: !!addr && !!hours && ready,
-                refetchOnWindowFocus: false
             },
             {
-                queryKey: ['month-addr-tnx', addr, months], 
-                queryFn: () => getMonthlyAddrTransactions({addr, count: Number(months)}),
+                queryKey: ['month-esps-addr-tnx', addr, months], 
+                queryFn: () => getMonthlyEspeesAddrTransactions({addr, count: Number(months)}),
                 enabled: !!addr && !!months && ready,
-                refetchOnWindowFocus: false
             },
         ]
     });
 
     const mutation = useMutation({
-        mutationFn: (payload) => getAddrTransactionsCountByRange(payload),
+        mutationFn: (payload) => getEspeesAddrTransactionsCountByRange(payload),
         onError: (error) => {},
         onSuccess: (data) => {},
         retry: 3,
@@ -92,7 +89,11 @@ const TransactionsAddress = () => {
 
     const handleSubmit = () => {
         if(!addr.length) return;
-        setReady(true);
+       setReady(true)
+    }
+
+    const handleFormSubmit = (values) => {
+        mutation.mutate(values);
     }
 
     const dailyAxisData = () => {
@@ -131,15 +132,11 @@ const TransactionsAddress = () => {
         else return []
     }
 
-    const handleFormSubmit = (values) => {
-        mutation.mutate(values);
-    }
-
     return (
-        <Layout title="Transaction detail">
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
-                Get access to TORO transaction data for a specific toronet address by dates and Toro range. Simply select the start and end dates
-                you want to query as well as an amount range in Toro's. We'll handle the rest. 
+        <Layout title="Espees Transaction by Address">
+            {/* <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
+                Get access to Espees transaction data for a specific toronet address by dates and Espees range. Simply select the start and end dates
+                you want to query as well as an amount range in Espees. We'll handle the rest. 
             </Alert>
             <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
                 <Grid mt={theme.spacing.xl * 2}>
@@ -177,7 +174,7 @@ const TransactionsAddress = () => {
                             placeholder="Start range"
                             label={
                                 <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    Amount in Toro's to start 
+                                    Amount in Espees to start 
                                 </Text>
                             }  
                             size="md"
@@ -190,7 +187,7 @@ const TransactionsAddress = () => {
                             withAsterisk
                             label={
                                 <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    Amount in Toro's to end 
+                                    Amount in Espees to end 
                                 </Text>
                             }  
                             size="md"
@@ -231,14 +228,14 @@ const TransactionsAddress = () => {
                         Please check your query and try again.
                     </Text>
                 </Card>
-            )}
+            )} */}
 
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mt={theme.spacing.xl * 3} mb="xl" title="Realtime Updates" color="gray" radius="md">
                 All transactions listed are polled every minute per session. This keeps your 
                 Toronet metrics & performance data accurate at any giving time.
             </Alert>
-            <Group mb="xl" position='right'>
-                <TextInput sx={{width: '40%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
+            <Group mb="xl" position='apart'>
+                <TextInput sx={{width: '85%'}} value={addr} onChange={e => setAddr(e.target.value)} size="md" placeholder='0x160166dbc33c0cdcd8a3898635d39c729204548d' />
                 <Button onClick={handleSubmit} leftIcon={<IconSearch size={18} />} size="md">
                     <Text size="sm">Search</Text>
                 </Button>
@@ -248,7 +245,7 @@ const TransactionsAddress = () => {
                 <article className={classes.section}>
                     <Group mt="xl" position='apart'>
                         <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                            Hourly transactions
+                            Hourly espees transactions
                         </Title>
 
                         <SegmentedControl
@@ -276,9 +273,11 @@ const TransactionsAddress = () => {
                     ) : (
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
-                            <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No hourly data!</Title>
-                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {(addr && hourlyData.data?.data?.length === 0) ? 'Hourly data not found!' : 'Address required!'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
                             </Text>
 
                             {hourlyData.fetchStatus === "fetching" && (
@@ -291,7 +290,7 @@ const TransactionsAddress = () => {
                 <article className={classes.section}>
                     <Group mt="xl" position='apart'>
                         <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                            Daily transactions
+                            Daily espees transactions
                         </Title>
 
                         <SegmentedControl
@@ -319,9 +318,11 @@ const TransactionsAddress = () => {
                     ) : (
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
-                            <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No daily data!</Title>
-                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {(addr && dailyData.data?.data?.length === 0) ? 'Daily data not found!' : 'Address required!'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
                             </Text>
 
                             {dailyData.fetchStatus === 'fetching' && (
@@ -334,7 +335,7 @@ const TransactionsAddress = () => {
                 <article className={classes.section}>
                     <Group mt="xl" position='apart'>
                         <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                            Monthly transactions
+                            Monthly espees transactions
                         </Title>
 
                         <SegmentedControl
@@ -362,9 +363,11 @@ const TransactionsAddress = () => {
                     ) : (
                         <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                             <img className={classes.empty} src={empty} alt="empty" />
-                            <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No monthly data!</Title>
-                            <Text size="sm" mb="xl" color={theme.colors.gray[7]}>
-                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter a Toronet address via the input above to get started'}
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {(addr && monthlyData.data?.data?.length === 0) ? 'Monthly data not found!' : 'Address required!'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                {addr ? 'We could not find any data matching your search at this time.' : 'Enter an address to get started'}
                             </Text>
 
                             {monthlyData.fetchStatus === 'fetching' && (
@@ -378,4 +381,4 @@ const TransactionsAddress = () => {
     )
 }
 
-export default TransactionsAddress;
+export default EspeesAddress;

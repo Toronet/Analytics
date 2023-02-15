@@ -9,10 +9,12 @@ import PrivateRoute from './components/PrivateRoute';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Tokens from './pages/Dashboard/Tokens';
-import TokensAddress from './pages/Dashboard/TokensAddress';
-import Transactions from './pages/Dashboard/Transactions';
-import TransactionsAddress from './pages/Dashboard/TransactionsAddress';
+import GlobalTransactions from './pages/Dashboard/Transactions/Global';
+import GlobalTransactionsAddress from './pages/Dashboard/Transactions/GlobalAddress';
+import EspeesTransactions from './pages/Dashboard/Transactions/Espees';
+import EspeesTransactionsAddress from './pages/Dashboard/Transactions/EspeesAddress';
+import GlobalDistribution from './pages/Dashboard/Distribution/Global';
+import EspeesDistribution from './pages/Dashboard/Distribution/Espees';
 import Macrotrends from './pages/Dashboard/Macrotrends';
 import MacrotrendsAddress from './pages/Dashboard/MacrotrendsAddress';
 
@@ -40,10 +42,12 @@ const App = () => {
 
               <Route path="dashboard">
                 <Route index element={<PrivateRoute component={Dashboard} />} />
-                <Route path="transactions" element={<PrivateRoute component={Transactions} />} />
-                <Route path="transactions/address" element={<PrivateRoute component={TransactionsAddress} />} />
-                <Route path="tokens" element={<PrivateRoute component={Tokens} />} />
-                <Route path="tokens/address" element={<PrivateRoute component={TokensAddress} />} />
+                <Route path="transactions/global" element={<PrivateRoute component={GlobalTransactions} />} />
+                <Route path="transactions/global/address" element={<PrivateRoute component={GlobalTransactionsAddress} />} />
+                <Route path="transactions/espees" element={<PrivateRoute component={EspeesTransactions} />} />
+                <Route path="transactions/espees/address" element={<PrivateRoute component={EspeesTransactionsAddress} />} />
+                <Route path="distribution/global" element={<PrivateRoute component={GlobalDistribution} />} />
+                <Route path="distribution/espees" element={<PrivateRoute component={EspeesDistribution} />} />
                 <Route path="macrotrends" element={<PrivateRoute component={Macrotrends} />} />
                 <Route path="macrotrends/address" element={<PrivateRoute component={MacrotrendsAddress} />} />
               </Route>

@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { useForm } from '@mantine/form';
-import { DatePicker } from '@mantine/dates';
-import { useQueries, useMutation } from '@tanstack/react-query';
+
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IconCalendarStats, IconAlertCircle, IconCalendarTime, IconCalendar, IconSearch } from '@tabler/icons';
-import { Grid, Card, Stack, Title, Text, Alert, NumberInput, Space, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
+import { Grid, Card, Stack, Title, Text, Alert, Button, SegmentedControl, LoadingOverlay, createStyles, useMantineTheme, Group } from '@mantine/core';
 
-import Layout from '../../components/Layout';
-import DailyChart from '../../components/Reports/DailyReport';
-import HourlyReport from '../../components/Reports/HourlyReport';
-import MonthlyReport from '../../components/Reports/MonthlyReport';
+import Layout from '../../../components/Layout';
+import DailyChart from '../../../components/Reports/DailyReport';
+import HourlyReport from '../../../components/Reports/HourlyReport';
+import MonthlyReport from '../../../components/Reports/MonthlyReport';
 
-import empty from '../../assets/empty.png';
-
-import { getDailyEspeesTransactions, getHourlyEspeesTransactions, getMonthlyEspeesTransactions, getEspeesTransactionsCountByRange } from '../../services/transactions';
+import { getDailyTransactions, getHourlyTransactions, getMonthlyTransactions } from '../../../services/transactions';
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     icons: {
@@ -54,7 +51,7 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
     }
 }));
 
-const Tokens = () => {
+const GlobalTransactions = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const theme = useMantineTheme();
@@ -64,49 +61,28 @@ const Tokens = () => {
     const [hours, setHours] = useState('12');
     const [months, setMonths] = useState('3');
 
-    const form = useForm({
-        initialValues: {
-            startDate: new Date('2022-08-01'),
-            endDate: new Date(),
-        },
-        validate: {
-            startDate: (value) => (value ? null : 'Start date is required'),
-            endDate: (value) => (value ? null : 'End date is required'),
-            amountStart: (value) => ((value || value === 0) ? null : "Start range is required"),
-            amountEnd: (value) => (value ? null : "End range is required")
-        }
-    });
+
 
     const [dailyData, hourlyData, monthlyData] = useQueries({
         queries: [
             {
-                queryKey: ['day-esps-tnx', days], 
-                queryFn: () => getDailyEspeesTransactions(Number(days)),
+                queryKey: ['day-tnx', days], 
+                queryFn: () => getDailyTransactions(Number(days)),
                 enabled: !!days
             },
             {
-                queryKey: ['hour-esps-tnx', hours], 
-                queryFn: () => getHourlyEspeesTransactions(Number(hours)),
+                queryKey: ['hour-tnx', hours], 
+                queryFn: () => getHourlyTransactions(Number(hours)),
                 enabled: !!hours
             },
             {
-                queryKey: ['month-esps-tnx', months], 
-                queryFn: () => getMonthlyEspeesTransactions(Number(months)),
+                queryKey: ['month-tnx', months], 
+                queryFn: () => getMonthlyTransactions(Number(months)),
                 enabled: !!months
             },
         ]
     });
 
-    const mutation = useMutation({
-        mutationFn: (payload) => getEspeesTransactionsCountByRange(payload),
-        onError: (error) => {},
-        onSuccess: (data) => {},
-        retry: 3,
-    });
-
-    const handleFormSubmit = (values) => {
-        mutation.mutate(values);
-    }
 
     const dailyAxisData = () => {
         if(dailyData.data){
@@ -145,108 +121,20 @@ const Tokens = () => {
     }
 
     return (
-        <Layout title="Tokens activity">
+        <Layout title="Global Transactions">
             <Group mb="xl" position='right'>
                 <Button onClick={() => navigate(`${location.pathname}/address`)} leftIcon={<IconSearch size={18} />} size="md" variant='outline'>
                     <Text size="sm">Search by address</Text>
                 </Button>
             </Group>
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
-                Get access to Espees transaction data for specific dates by Espees range. Simply select the start and end dates
-                you want to query as well as an amount range in Espees. We'll handle the rest. 
+            
+
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mt={theme.spacing.xl * 1.5} mb="xl" title="Realtime Updates" color="gray" radius="md">
+                All transactions listed are polled every minute per session. This keeps your 
+                Toronet metrics & performance data accurate at any giving time.
             </Alert>
 
-            <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
-                <Grid mt={theme.spacing.xl * 2}>
-                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
-                        <DatePicker 
-                            withAsterisk 
-                            dropdownPosition="bottom-start"
-                            placeholder='Please select a start date'
-                            label={
-                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    Start date
-                                </Text>
-                            } 
-                            size="md" 
-                            {...form.getInputProps('startDate')} 
-                        />
-                    </Grid.Col>
-                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
-                        <DatePicker 
-                            withAsterisk 
-                            dropdownPosition="bottom-start"
-                            label={
-                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    End date
-                                </Text>
-                            } 
-                            size="md" 
-                            {...form.getInputProps('endDate')} 
-                        />
-                    </Grid.Col>
-                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
-                        <NumberInput
-                            withAsterisk
-                            label={
-                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    Amount in Espees to start 
-                                </Text>
-                            }  
-                            size="md"
-                            min={0}
-                            placeholder=''
-                            {...form.getInputProps('amountStart')} 
-                        />
-                    </Grid.Col>
-                    <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
-                        <NumberInput 
-                            withAsterisk
-                            label={
-                                <Text component="label" size="sm" color={theme.colors.gray[7]}>
-                                    Amount in Espees to end 
-                                </Text>
-                            }  
-                            size="md"
-                            placeholder=''
-                            {...form.getInputProps('amountEnd')} 
-                        />
-                    </Grid.Col>
-                </Grid>    
-                <Group mt="lg" position='right'>
-                    <Button type="submit" leftIcon={<IconSearch size={18} />} loading={mutation.status === 'loading'} size="md" variant='filled'>
-                        <Text size="sm">Search by range</Text>
-                    </Button>
-                </Group>
-            </form>
-
-            {(mutation.data && mutation.status !== 'loading') ? (
-                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
-                    <Text align="center" size="md" color={theme.colors.gray[7]}>
-                        {mutation.data.message}
-                    </Text>
-                    <Space h={30} />
-
-                    Espees transaction count is: <Text size={theme.fontSizes.lg * 1.8} weight={800} color={theme.colors.pink[7]}>{mutation.data.data[0].Count?.toLocaleString()}</Text>
-                </Card>
-            ) : (
-                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
-                    <img className={classes.empty} src={empty} alt="empty" />
-                    <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No data!</Title>
-                    <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
-                        We could not find any data matching your results. 
-                        Please check your query and try again.
-                    </Text>
-                </Card>
-            )}
-
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mt={theme.spacing.xl * 1.5} mb="xl" title="Realtime Tokens Updates" color="gray" radius="md">
-                All tokens can be monitored from here but since Espees is the only token available, that's all you'll see here. 
-                Like before all transactions listed are polled every minute per session. This keeps your 
-                Toronet metrics & performance data accurate at any giving time.
-            </Alert>    
-
-            <Grid>
+            {/* <Grid>
                 <Grid.Col xl={4} lg={6} md={6} sm={12} xs={12}>
                     <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
                         <Stack align="center">
@@ -260,7 +148,7 @@ const Tokens = () => {
                                 hourly transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total count of espees transactions in the past {hours} hours
+                                Total transaction count in the past {hours} hours
                             </Text>
                         </Stack>
 
@@ -281,7 +169,7 @@ const Tokens = () => {
                                 daily transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total count of espees transactions in the past {days} days.
+                                Total transaction count in the past {days} days.
                             </Text>
                         </Stack>
 
@@ -302,19 +190,19 @@ const Tokens = () => {
                                 monthly transactions
                             </Title>
                             <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total count of espees transactions in the past {months} months
+                                Total transaction count in the past {months} months
                             </Text>
                         </Stack>
 
                         <LoadingOverlay visible={monthlyData.isLoading} overlayBlur={2} />
                     </Card>
                 </Grid.Col>
-            </Grid>
+            </Grid> */}
 
             <article className={classes.section}>
                 <Group mt="xl" position='apart'>
                     <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                        Espees Hourly transactions
+                        Hourly transactions
                     </Title>
 
                     <SegmentedControl
@@ -330,6 +218,25 @@ const Tokens = () => {
                     />
                 </Group>
 
+                <Card mt="xl" p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
+                    <Stack align="center">
+                        <div className={classes.icons}>
+                            <IconCalendarStats color={theme.colors.green[7]} />
+                        </div>
+                        <Title order={2} weight={900} color={theme.colors.green[7]}>
+                            {hourlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
+                        </Title>
+                        <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                            hourly transactions
+                        </Title>
+                        <Text size="sm" color={theme.colors.gray[7]} align="center">
+                            Total transaction count in the past {hours} hours
+                        </Text>
+                    </Stack>
+
+                    <LoadingOverlay visible={hourlyData.isLoading} overlayBlur={2} />
+                </Card>
+
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.card}>
                     <HourlyReport categories={hourlyAxisData('x')} data={hourlyAxisData('y')} />
 
@@ -342,7 +249,7 @@ const Tokens = () => {
             <article className={classes.section}>
                 <Group mt="xl" position='apart'>
                     <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                        Espees Daily transactions
+                        Daily transactions
                     </Title>
 
                     <SegmentedControl
@@ -358,6 +265,25 @@ const Tokens = () => {
                     />
                 </Group>
 
+                <Card p="xl" mt="xl" withBorder radius="lg" sx={{position: 'relative'}}>
+                    <Stack align="center">
+                        <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
+                            <IconCalendarTime color={theme.colors.blue[7]} />
+                        </div>
+                        <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
+                            {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
+                        </Title>
+                        <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
+                            daily transactions
+                        </Title>
+                        <Text size="sm" color={theme.colors.gray[7]} align="center">
+                            Total transaction count in the past {days} days.
+                        </Text>
+                    </Stack>
+
+                    <LoadingOverlay visible={dailyData.isLoading} overlayBlur={2} />
+                </Card>
+
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.card}>
                     <DailyChart series={dailyAxisData()} />
 
@@ -370,7 +296,7 @@ const Tokens = () => {
             <article className={classes.section}>
                 <Group mt="xl" position='apart'>
                     <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
-                        Espees Monthly transactions
+                        Monthly transactions
                     </Title>
 
                     <SegmentedControl
@@ -386,6 +312,25 @@ const Tokens = () => {
                     />
                 </Group>
 
+                <Card p="xl" mt="xl" withBorder radius="lg" sx={{position: 'relative'}}>
+                    <Stack align="center">
+                        <div className={cx(classes.icons, {[classes.iconsOrange]: true})}>
+                            <IconCalendar color={theme.colors.pink[7]} />
+                        </div>
+                        <Title order={2} weight={900} color={theme.colors.pink[7]} align="center">
+                            {monthlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
+                        </Title>
+                        <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
+                            monthly transactions
+                        </Title>
+                        <Text size="sm" color={theme.colors.gray[7]} align="center">
+                            Total transaction count in the past {months} months
+                        </Text>
+                    </Stack>
+
+                    <LoadingOverlay visible={monthlyData.isLoading} overlayBlur={2} />
+                </Card>
+
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.card}>
                     <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
 
@@ -394,8 +339,10 @@ const Tokens = () => {
                     )}
                 </Card>
             </article>
+
+            
         </Layout>
     )
 }
 
-export default Tokens;
+export default GlobalTransactions;

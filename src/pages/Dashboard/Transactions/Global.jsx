@@ -10,7 +10,7 @@ import DailyChart from '../../../components/Reports/DailyReport';
 import HourlyReport from '../../../components/Reports/HourlyReport';
 import MonthlyReport from '../../../components/Reports/MonthlyReport';
 
-import { getDailyTransactions, getHourlyTransactions, getMonthlyTransactions } from '../../../services/transactions';
+import { getDailyTransactions, getDailyTransactionsVol, getHourlyTransactions, getMonthlyTransactions } from '../../../services/transactions';
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     icons: {
@@ -63,11 +63,16 @@ const GlobalTransactions = () => {
 
 
 
-    const [dailyData, hourlyData, monthlyData] = useQueries({
+    const [dailyData, dailyVolData, hourlyData, monthlyData] = useQueries({
         queries: [
             {
                 queryKey: ['day-tnx', days], 
                 queryFn: () => getDailyTransactions(Number(days)),
+                enabled: !!days
+            },
+            {
+                queryKey: ['day-tnx-vol', days], 
+                queryFn: () => getDailyTransactionsVol(Number(days)),
                 enabled: !!days
             },
             {
@@ -94,6 +99,17 @@ const GlobalTransactions = () => {
         }
         else return []
     };
+
+    // const dailyVolAxisData = () => {
+    //     if(dailyVolData.data){
+    //         const res = dailyVolData.data.data.map(item => {
+    //             const data = {...item, TheDate: Date.parse(item.TheDate)};
+    //             return Object.values(data);
+    //         });
+    //         return res;
+    //     }
+    //     else return []
+    // };
 
     const hourlyAxisData = (axis) => {
         if(hourlyData.data && axis === 'x'){
@@ -265,24 +281,49 @@ const GlobalTransactions = () => {
                     />
                 </Group>
 
-                <Card p="xl" mt="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                    <Stack align="center">
-                        <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
-                            <IconCalendarTime color={theme.colors.blue[7]} />
-                        </div>
-                        <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
-                            {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
-                        </Title>
-                        <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
-                            daily transactions
-                        </Title>
-                        <Text size="sm" color={theme.colors.gray[7]} align="center">
-                            Total transaction count in the past {days} days.
-                        </Text>
-                    </Stack>
+                <Grid>
+                    <Grid.Col span={6}>
+                        <Card p="xl" mt="xl" withBorder radius="lg" sx={{position: 'relative'}}>
+                            <Stack align="center">
+                                <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
+                                    <IconCalendarTime color={theme.colors.blue[7]} />
+                                </div>
+                                <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
+                                    {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
+                                </Title>
+                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
+                                    daily transactions count
+                                </Title>
+                                <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                    Total transaction count in the past {days} days.
+                                </Text>
+                            </Stack>
 
-                    <LoadingOverlay visible={dailyData.isLoading} overlayBlur={2} />
-                </Card>
+                            <LoadingOverlay visible={dailyData.isLoading} overlayBlur={2} />
+                        </Card>
+                    </Grid.Col>
+
+                    <Grid.Col span={6}>
+                        <Card p="xl" mt="xl" withBorder radius="lg" sx={{position: 'relative'}}>
+                            <Stack align="center">
+                                <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
+                                    <IconCalendarTime color={theme.colors.blue[7]} />
+                                </div>
+                                <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
+                                    {dailyVolData.data ? dailyVolData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
+                                </Title>
+                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
+                                    daily transactions volume
+                                </Title>
+                                <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                    Total transaction volume in the past {days} days.
+                                </Text>
+                            </Stack>
+
+                            <LoadingOverlay visible={dailyVolData.isLoading} overlayBlur={2} />
+                        </Card>
+                    </Grid.Col>
+                </Grid>
 
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.card}>
                     <DailyChart series={dailyAxisData()} />
@@ -291,6 +332,14 @@ const GlobalTransactions = () => {
                         <LoadingOverlay visible overlayBlur={2} />
                     )}
                 </Card>
+
+                {/* <Card mt="xl" p="xl" withBorder radius="lg" className={classes.card}>
+                    <DailyChart series={dailyVolAxisData()} />
+
+                    {dailyData.status === 'loading' && (
+                        <LoadingOverlay visible overlayBlur={2} />
+                    )}
+                </Card> */}
             </article>
 
             <article className={classes.section}>

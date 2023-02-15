@@ -2,6 +2,12 @@ import axios from 'axios';
 
 //@: Transactions
 export const getDailyTransactions = async (count) => {
+    const op = 'getdailytransactioncounts';
+    const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=count&params[0][value]=${count}`);
+    return res.data
+}
+
+export const getDailyTransactionsVol = async (count) => {
     const op = 'getdailytransactioncountsvol';
     const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=count&params[0][value]=${count}`);
     return res.data

@@ -150,7 +150,7 @@ const Dashboard = () => {
                                     <Text color={theme.colors.gray[8]}>
                                         Contract: {item.EV_Contract}
                                     </Text>
-                                    <Text italic color={theme.colors.gray[8]}>
+                                    <Text size="sm" color={theme.colors.gray[8]}>
                                         Date: {new Date(item.EV_Time).toDateString()}
                                     </Text>
                                 </Group>

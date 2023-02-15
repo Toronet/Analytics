@@ -9,6 +9,7 @@ import PrivateRoute from './components/PrivateRoute';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ToroTransactions from './pages/Dashboard/Transactions/Toro';
 import GlobalTransactions from './pages/Dashboard/Transactions/Global';
 import GlobalTransactionsAddress from './pages/Dashboard/Transactions/GlobalAddress';
 import EspeesTransactions from './pages/Dashboard/Transactions/Espees';
@@ -42,6 +43,7 @@ const App = () => {
 
               <Route path="dashboard">
                 <Route index element={<PrivateRoute component={Dashboard} />} />
+                <Route path="transactions/toro" element={<PrivateRoute component={ToroTransactions} />} />
                 <Route path="transactions/global" element={<PrivateRoute component={GlobalTransactions} />} />
                 <Route path="transactions/global/address" element={<PrivateRoute component={GlobalTransactionsAddress} />} />
                 <Route path="transactions/espees" element={<PrivateRoute component={EspeesTransactions} />} />

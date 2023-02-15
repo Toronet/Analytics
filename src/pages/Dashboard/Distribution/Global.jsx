@@ -61,7 +61,7 @@ const GlobalDistribution = () => {
         mutation.mutate(values);
     }
     return (
-        <Layout title="Toro Distribution">
+        <Layout title="Global Distribution">
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
                 Get access to TORO transaction data for specific dates by Toro range. Simply select the start and end dates
                 you want to query as well as an amount range in Toro's. We'll handle the rest. 

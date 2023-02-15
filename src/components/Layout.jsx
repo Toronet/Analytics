@@ -97,6 +97,16 @@ const Layout = ({children, title}) => {
                                 </Text>  
                             </Group> 
                         </Link> 
+                        <Link to="/dashboard/transactions/toro" className={cx(classes.link, {[classes.linkActive]: '/dashboard/transactions/toro' === currentRoute})}>
+                            <Group align="center">
+                                <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/transactions/toro' === currentRoute})}>
+                                    <IconCash size={theme.spacing.lg} /> 
+                                </div>
+                                <Text weight={'/dashboard/transactions/toro' === currentRoute ? 600 : 500}>
+                                    Toro
+                                </Text>  
+                            </Group> 
+                        </Link> 
                         <Link to="/dashboard/transactions/espees" className={cx(classes.link, {[classes.linkActive]: '/dashboard/transactions/espees' === currentRoute})}>
                             <Group align="center">
                                 <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/transactions/espees' === currentRoute})}>
@@ -118,7 +128,7 @@ const Layout = ({children, title}) => {
                                     Global
                                 </Text>  
                             </Group> 
-                        </Link> 
+                        </Link>
                         <Link to="/dashboard/distribution/espees" className={cx(classes.link, {[classes.linkActive]: '/dashboard/distribution/espees' === currentRoute})}>
                             <Group align="center">
                                 <div className={cx(classes.icon, {[classes.iconActive]: '/dashboard/distribution/espees' === currentRoute})}>

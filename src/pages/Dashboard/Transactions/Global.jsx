@@ -127,6 +127,7 @@ const GlobalTransactions = () => {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         if(monthlyData.data && axis === 'x'){
             const res = monthlyData.data.data.map(item => months[item.TheMonth - 1]);
+            console.log('MONTHS', res.reverse())
             return res;
         }
         else if (monthlyData.data && axis === 'y'){

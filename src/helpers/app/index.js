@@ -4,6 +4,8 @@ export const storage_key = 'toronet-analytics';
 
 export const session = localStorage.getItem(storage_key) ? JSON.parse(localStorage.getItem(storage_key)) : null;
 
+export const clearSession = () => localStorage.removeItem(storage_key);
+
 export const showError = (error, message) => {
   return showNotification({
     color: 'red',

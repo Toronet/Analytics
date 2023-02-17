@@ -99,7 +99,7 @@ const Dashboard = () => {
                     Token Balances
                 </Title>
                 <Grid mt="xl">
-                    <Grid.Col xl={4}>
+                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Toro</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>
@@ -107,7 +107,7 @@ const Dashboard = () => {
                             </Title>
                         </Card>
                     </Grid.Col>
-                    <Grid.Col xl={4}>
+                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Espees</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>
@@ -115,7 +115,7 @@ const Dashboard = () => {
                             </Title>
                         </Card>
                     </Grid.Col>
-                    <Grid.Col xl={4}>
+                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
                         <Card p="xl" withBorder radius="lg">
                             <Text tt="uppercase" weight={400} size="xs">Plast</Text>
                             <Title mt="xs" order={2} color={theme.colors.gray[8]}>

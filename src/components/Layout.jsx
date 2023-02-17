@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { IconHome2, IconCash, IconChartAreaLine, IconCoin } from '@tabler/icons';
-import { AppShell, Navbar, Group, Title, Text, ScrollArea, createStyles, MediaQuery, Burger, useMantineTheme } from '@mantine/core';
+import { IconHome2, IconCash, IconChartAreaLine, IconLogout } from '@tabler/icons';
+import { AppShell, Navbar, Group, Title, Text, ScrollArea, createStyles, MediaQuery, Burger, useMantineTheme, Avatar, Menu } from '@mantine/core';
 
 import brand from '../assets/toronet-alt.png';
+import { clearSession } from '../helpers/app';
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     section: {
@@ -62,7 +63,12 @@ const Layout = ({children, title}) => {
     const theme = useMantineTheme();
     const location = useLocation();
 
-    const currentRoute = location.pathname
+    const currentRoute = location.pathname;
+
+    const handleLogout = () => {
+        clearSession();
+        window.location.reload();
+    }
 
     return (
         <AppShell
@@ -164,20 +170,34 @@ const Layout = ({children, title}) => {
             })}
         >
             <header className={classes.header}>
-                <Group position='apart'>
+                <Group align="center" position='apart'>
                     <Title order={2} color={theme.colors.gray[8]}>
                         {title}
                     </Title>
 
-                    <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
-                        <Burger
-                            opened={opened}
-                            onClick={() => setOpened((o) => !o)}
-                            size="sm"
-                            color={theme.colors.gray[6]}
-                            mr="xl"
-                        />
-                    </MediaQuery>
+                    <Group align="center">    
+                        <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
+                            <Burger
+                                opened={opened}
+                                onClick={() => setOpened((o) => !o)}
+                                size="sm"
+                                color={theme.colors.gray[6]}
+                                mr="xl"
+                            />
+                        </MediaQuery>
+
+                        <Menu shadow="md" width={200} position="bottom-end">
+                            <Menu.Target>
+                                <Avatar style={{cursor: "pointer"}} />
+                            </Menu.Target>
+
+                            <Menu.Dropdown>
+                                <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={14} />}>
+                                    Logout
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </Group>
                 </Group>
             </header>
 

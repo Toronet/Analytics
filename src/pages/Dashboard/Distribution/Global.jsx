@@ -30,7 +30,7 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
 
 const GlobalDistribution = () => {
     const [rangeStart, setRangeStart] = useState(0);
-    const [rangeEnd, setRangeEnd] = useState(200);
+    const [rangeEnd, setRangeEnd] = useState(250);
     const [result, setResult] = useState([]);
 
     const { classes } = useStyles();

@@ -53,9 +53,10 @@ const GlobalDistribution = () => {
 
     useEffect(() => {
         const res = generateIntervalsOf(50, rangeStart, rangeEnd);
-        res.forEach((item, idx) => {
-            console.log(item, idx + 1)
+        res.forEach((item) => {
+            return fetchDistributionData(item)
         });
+
         //mutation.mutate(form.values)
     },[]);
 
@@ -87,19 +88,17 @@ const GlobalDistribution = () => {
         retry: 3,
     });
 
-    console.log(result)
-
-    // const monthlyAxisData = (axis) => {
-    //     if(result.length && axis === 'x'){
-    //         const res = result.map(item => item.interval);
-    //         return res;
-    //     }
-    //     else if (result.length && axis === 'y'){
-    //         const res = result.map(item => item.data);
-    //         return res;
-    //     }
-    //     else return []
-    // }
+    const monthlyAxisData = (axis) => {
+        if(result.length && axis === 'x'){
+            const res = result.map(item => item.interval);
+            return res;
+        }
+        else if (result.length && axis === 'y'){
+            const res = result.map(item => item.data);
+            return res;
+        }
+        else return []
+    }
 
     // const handleFormSubmit = (values) => {
     //     mutation.mutate(values);
@@ -190,7 +189,7 @@ const GlobalDistribution = () => {
                         </Text>
                     </Text>
 
-                    {/* <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} /> */}
+                    <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
 
                     <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />
                 </Card>
@@ -201,8 +200,8 @@ const GlobalDistribution = () => {
                         Under Development
                     </Title>
                     <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
-                        We could not find any data matching your results. 
-                        Please check your query and try again.
+                        This page is currently under development at the moment. Please check
+                        back later.
                     </Text>
 
                     <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />

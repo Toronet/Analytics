@@ -85,13 +85,17 @@ const Dashboard = () => {
 
     return (
         <Layout title="Home">
-            <Card sx={{backgroundColor: theme.colors.green[0]}} withBorder={false} p="xl" radius="lg">
+            <Card sx={{backgroundColor: theme.colors.green[0], position: 'relative'}} withBorder={false} p="xl" radius="lg">
                 <Title order={2} mb="lg" color={theme.colors.green[7]}>
                     Welcome back,
                 </Title>
                 <Text>
                     You are logged in as a {userRole?.data?.role}: <Text span color={theme.colors.gray[8]} weight={600}>{session.user}</Text>
                 </Text>
+
+                {userRole.status === 'loading' && (
+                    <LoadingOverlay visible overlayBlur={2} />
+                )}
             </Card>
 
             <div className={classes.section}>

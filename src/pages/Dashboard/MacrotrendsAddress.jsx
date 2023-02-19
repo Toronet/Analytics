@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
 import { useQueries } from '@tanstack/react-query';
 import { IconCalendarStats, IconAlertCircle, IconSearch } from '@tabler/icons';
-import { Alert, Title, Stack, Card, Text, TextInput, Button, LoadingOverlay, createStyles, useMantineTheme, Grid } from '@mantine/core';
+import { Alert, Title, Stack, Card, Text, Button, TextInput, LoadingOverlay, createStyles, useMantineTheme, Grid } from '@mantine/core';
 
 import empty from '../../assets/empty.png';
 import Layout from '../../components/Layout';
@@ -31,8 +31,8 @@ const useStyles = createStyles((theme) => ({
         position: 'relative'
     },
     empty: {
-        width: theme.spacing.xl * 15,
-        height: theme.spacing.xl * 10,
+        width: theme.spacing.xl * 8,
+        height: theme.spacing.xl * 8,
         objectFit: 'contain',
         filter: 'grayscale(1)',
         opacity: '.5'
@@ -63,41 +63,50 @@ const MacrotrendsAddress = () => {
         }
     });
 
+    const { startDate, endDate, addr }  = form.values;
+
     const [totalCountSums, deposits, withdrawals] = useQueries({
         queries: [
             {
-                queryKey: ['macrotrends-count-sum', trigger], 
+                queryKey: ['macrotrends-count-sum'], 
                 queryFn: () => getTransactionCountSumsAddrEspees({
-                    startDate: new Date(form.values.startDate).toLocaleDateString('fr-CA'), 
-                    endDate: new Date(form.values.endDate).toLocaleDateString('fr-CA'),
-                    addr: form.values.addr
+                    startDate: new Date(startDate).toLocaleDateString('fr-CA'), 
+                    endDate: new Date(endDate).toLocaleDateString('fr-CA'),
+                    addr: addr 
                 }),
-                enabled: trigger
+                enabled: false,
+                refetchOnWindowFocus: false,
             },
             {
-                queryKey: ['macrotrends-deposits', trigger], 
+                queryKey: ['macrotrends-deposits'], 
                 queryFn: () => getTransactionCountSumsAddrInEspees({
-                    startDate: new Date(form.values.startDate).toLocaleDateString('fr-CA'), 
-                    endDate: new Date(form.values.endDate).toLocaleDateString('fr-CA'),
-                    addr: form.values.addr
+                    startDate: new Date(startDate).toLocaleDateString('fr-CA'), 
+                    endDate: new Date(endDate).toLocaleDateString('fr-CA'),
+                    addr: addr
                 }),
-                enabled: trigger
+                enabled: false,
+                refetchOnWindowFocus: false,
             },
             {
-                queryKey: ['macrotrends-withdrawals', trigger], 
+                queryKey: ['macrotrends-withdrawals'], 
                 queryFn: () => getTransactionCountSumsAddrOutEspees({
-                    startDate: new Date(form.values.startDate).toLocaleDateString('fr-CA'), 
-                    endDate: new Date(form.values.endDate).toLocaleDateString('fr-CA'),
-                    addr: form.values.addr
+                    startDate: new Date(startDate).toLocaleDateString('fr-CA'), 
+                    endDate: new Date(endDate).toLocaleDateString('fr-CA'),
+                    addr: addr
                 }),
-                enabled: trigger
+                enabled: false,
+                refetchOnWindowFocus: false,
             },
         ]
     });
 
     const handleSubmit = (_values) => {
-        setTrigger(true);
+        totalCountSums.refetch();
+        deposits.refetch();
+        withdrawals.refetch();
     };
+
+    const isLoading = (totalCountSums.fetchStatus === 'fetching' || deposits.fetchStatus === 'fetching' || withdrawals.fetchStatus === 'fetching');
 
     return (
         <Layout title="Macrotrends detail">
@@ -109,7 +118,7 @@ const MacrotrendsAddress = () => {
             <div className={classes.formWrapper}>
                 <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
                     <Grid>
-                        <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <Grid.Col span={3}>
                             <TextInput
                                 withAsterisk
                                 label={
@@ -122,7 +131,7 @@ const MacrotrendsAddress = () => {
                                 {...form.getInputProps('addr')}
                             />
                         </Grid.Col>
-                        <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <Grid.Col span={3}>
                             <DatePicker 
                                 withAsterisk 
                                 dropdownPosition="bottom-start"
@@ -136,7 +145,7 @@ const MacrotrendsAddress = () => {
                                 {...form.getInputProps('startDate')} 
                             />
                         </Grid.Col>
-                        <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <Grid.Col span={3}>
                             <DatePicker 
                                 withAsterisk 
                                 dropdownPosition="bottom-start"
@@ -149,13 +158,14 @@ const MacrotrendsAddress = () => {
                                 {...form.getInputProps('endDate')} 
                             />
                         </Grid.Col>
-                        <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
+                        <Grid.Col span={3}>
                             <Button 
                                 variant='filled' 
                                 type="submit" 
                                 size="md" 
                                 fullWidth
                                 mt="xl" 
+                                loading={isLoading}
                                 leftIcon={<IconSearch size={18} />}
                             >
                                 <Text size="sm" span>Query address</Text>
@@ -165,111 +175,206 @@ const MacrotrendsAddress = () => {
                 </form>
             </div>
 
-            {(totalCountSums.data || deposits.data || withdrawals.data) ? (
-                <Grid mt="xl">
-                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
-                        <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                            <Stack align="center">
-                                <div className={classes.icons}>
-                                    <IconCalendarStats color={theme.colors.green[7]} />
-                                </div>
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Transaction Count
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {totalCountSums.data && totalCountSums.data.data[0].Count?.toLocaleString()}
-                                    </Title>
-                                </div>
-                                <div className={classes.divider} />
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Transaction Sum
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {totalCountSums.data && totalCountSums.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
-                                    </Title>
-                                </div>
-                                <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count & sum of transactions for the selected date range.
-                                </Text>
-                            </Stack>
+            <Grid mt="xl">
+                <Grid.Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                    {(totalCountSums.data && totalCountSums.data.data) ? (
+                        <div style={{position: 'relative'}}>
+                            <Grid>
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Transaction Count
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {totalCountSums.data.data[0]?.Count?.toLocaleString()}
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total count of transactions.
+                                            </Text>
+                                        </Stack>
+                                    </Card>
+                                </Grid.Col>
+
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Transaction Sum
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {totalCountSums.data.data[0]?.Sum?.toLocaleString()} <Text span tt="uppercase" size="md">Espees</Text>
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total sum of transactions
+                                            </Text>
+                                        </Stack>
+                                    </Card>
+                                </Grid.Col>
+                            </Grid>
 
                             <LoadingOverlay visible={totalCountSums.status === 'loading'} overlayBlur={2} />
-                        </Card>
-                    </Grid.Col>
-                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
-                        <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                            <Stack align="center">
-                                <div className={classes.icons}>
-                                    <IconCalendarStats color={theme.colors.green[7]} />
-                                </div>
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Deposit count
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {deposits.data && deposits.data.data[0].Count?.toLocaleString()}
-                                    </Title>
-                                </div>
-                                <div className={classes.divider} />
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Deposit sum
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {deposits.data && deposits.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
-                                    </Title>
-                                </div>
-                                <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count & sum of deposits for the selected date range.
-                                </Text>
-                            </Stack>
+                        </div>
+                    ) : (
+                        <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                            <img className={classes.empty} src={empty} alt="empty" />
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {!addr ? 'Address is required' : 'Transaction data not found.'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                We could not retrive the data needed for this page. Please
+                                check your request and try again.
+                            </Text>
+
+                            {totalCountSums.fetchStatus === 'fetching' && (
+                                <LoadingOverlay visible overlayBlur={2} />
+                            )}
+                        </Card> 
+                    )}
+                </Grid.Col>
+
+                <Grid.Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                    {deposits.data && deposits.data.data ? (
+                        <div style={{position: 'relative'}}>
+                            <Grid>
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Deposit count
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {deposits.data.data[0]?.Count?.toLocaleString()}
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total count of deposits made.
+                                            </Text>
+                                        </Stack>
+                                    </Card>
+                                </Grid.Col>
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">    
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Deposit sum
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {deposits.data.data[0]?.Sum?.toLocaleString() ?? 0} <Text span tt="uppercase" size="md">Espees</Text>
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total sum of deposits made.
+                                            </Text>
+                                        </Stack>
+                                    </Card>
+                                </Grid.Col>
+                            </Grid>
 
                             <LoadingOverlay visible={deposits.status === 'loading'} overlayBlur={2} />
-                        </Card>
-                    </Grid.Col>
-                    <Grid.Col xl={4} lg={4} md={4} sm={12} xs={12}>
-                        <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                            <Stack align="center">
-                                <div className={classes.icons}>
-                                    <IconCalendarStats color={theme.colors.green[7]} />
-                                </div>
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Withdrawal count
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {withdrawals.data && withdrawals.data.data[0].Count?.toLocaleString()}
-                                    </Title>
-                                </div>
-                                <div className={classes.divider} />
-                                <div>
-                                    <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                        Withdrawal sum
-                                    </Title>
-                                    <Title order={2} weight={900} color={theme.colors.green[7]} align="center">
-                                        {withdrawals.data && withdrawals.data.data[0].Sum?.toLocaleString()} <sup>Esps</sup>
-                                    </Title>
-                                </div>
-                                <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total count & sum of withdrawals for the selected date range.
-                                </Text>
-                            </Stack>
+                        </div>
+                    ) : (
+                        <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                            <img className={classes.empty} src={empty} alt="empty" />
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {!addr ? 'Address is required' : 'Deposits data not found.'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                We could not retrive the data needed for this page. Please
+                                check your request and try again.
+                            </Text>
+
+                            {deposits.fetchStatus === 'fetching' && (
+                                <LoadingOverlay visible overlayBlur={2} />
+                            )}
+                        </Card> 
+                    )}
+                </Grid.Col>
+
+                <Grid.Col xl={12} lg={12} md={12} sm={12} xs={12}>
+                    {withdrawals.data && withdrawals.data.data ? (
+                        <div style={{position: 'relative'}}>
+                            <Grid>
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Withdrawal count
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {withdrawals.data.data[0]?.Count?.toLocaleString()}
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total withdrawal count.
+                                            </Text>
+                                        </Stack>
+                                    </Card>  
+                                </Grid.Col>
+                                <Grid.Col span={6}>
+                                    <Card p="xl" withBorder radius="lg">
+                                        <Stack align="center">
+                                            <div className={classes.icons}>
+                                                <IconCalendarStats color={theme.colors.green[7]} />
+                                            </div>
+                                            <div>
+                                                <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                                                    Withdrawal sum
+                                                </Title>
+                                                <Title mt="sm" order={2} weight={900} color={theme.colors.green[7]} align="center">
+                                                    {withdrawals.data.data[0]?.Sum?.toLocaleString()} <Text span tt="uppercase" size="md">Espees</Text>
+                                                </Title>
+                                            </div>
+                                            <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                                Total withdrawal sum.
+                                            </Text>
+                                        </Stack>
+                                    </Card>  
+                                </Grid.Col>
+                            </Grid>
 
                             <LoadingOverlay visible={withdrawals.status === 'loading'} overlayBlur={2} />
-                        </Card>
-                    </Grid.Col>
-                </Grid>
-            ) : (
-                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
-                    <img className={classes.empty} src={empty} alt="empty" />
-                    <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>No search results!</Title>
-                    <Text size="sm" color={theme.colors.gray[7]}>
-                        Provide the requested details to begin your query.
-                    </Text>
-                </Card>
-            )}
+                        </div>
+                    ) : (
+                        <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                            <img className={classes.empty} src={empty} alt="empty" />
+                            <Title order={4} mb="sm" color={theme.colors.red[7]} weight={700}>
+                                {!addr ? 'Address is required' : 'Withdrawal data not found.'}
+                            </Title>
+                            <Text size="sm" color={theme.colors.gray[7]}>
+                                We could not retrive the data needed for this page. Please
+                                check your request and try again.
+                            </Text>
+
+                            {withdrawals.fetchStatus === 'fetching' && (
+                                <LoadingOverlay visible overlayBlur={2} />
+                            )}
+                        </Card> 
+                    )}
+                </Grid.Col>
+            </Grid>
         </Layout>
     )
 }

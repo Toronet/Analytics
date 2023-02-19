@@ -85,7 +85,7 @@ const Macrotrends = () => {
     return (
         <Layout title="Macrotrends">
             <Group mb="xl" position='right'>
-                <Button onClick={() => navigate(`${location.pathname}/address`)} leftIcon={<IconSearch size={18} />} size="md" variant='filled'>
+                <Button onClick={() => navigate(`${location.pathname}/address`)} leftIcon={<IconSearch size={18} />} size="md" variant='outline'>
                     <Text size="sm">Search by address</Text>
                 </Button>
             </Group>

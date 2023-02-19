@@ -186,17 +186,19 @@ const Layout = ({children, title}) => {
                             />
                         </MediaQuery>
 
-                        <Menu shadow="md" width={200} position="bottom-end">
-                            <Menu.Target>
-                                <Avatar style={{cursor: "pointer"}} />
-                            </Menu.Target>
+                        <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
+                            <Menu shadow="md" width={200} position="bottom-end">
+                                <Menu.Target>
+                                    <Avatar style={{cursor: "pointer"}} />
+                                </Menu.Target>
 
-                            <Menu.Dropdown>
-                                <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={14} />}>
-                                    Logout
-                                </Menu.Item>
-                            </Menu.Dropdown>
-                        </Menu>
+                                <Menu.Dropdown>
+                                    <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={14} />}>
+                                        Logout
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        </MediaQuery>
                     </Group>
                 </Group>
             </header>

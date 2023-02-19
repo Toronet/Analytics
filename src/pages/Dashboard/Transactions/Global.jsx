@@ -126,12 +126,11 @@ const GlobalTransactions = () => {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         if(monthlyData.data && axis === 'x'){
             const res = monthlyData.data.data.map(item => months[item.TheMonth - 1]);
-            console.log('MONTHS', res.reverse())
-            return res;
+            return res.reverse();
         }
         else if (monthlyData.data && axis === 'y'){
             const res = monthlyData.data.data.map(item => item.MonthlyTransactions);
-            return res;
+            return res.reverse();
         }
         else return []
     }
@@ -149,71 +148,6 @@ const GlobalTransactions = () => {
                 All transactions listed are polled every minute per session. This keeps your 
                 Toronet metrics & performance data accurate at any giving time.
             </Alert>
-
-            {/* <Grid>
-                <Grid.Col xl={4} lg={6} md={6} sm={12} xs={12}>
-                    <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                        <Stack align="center">
-                            <div className={classes.icons}>
-                                <IconCalendarStats color={theme.colors.green[7]} />
-                            </div>
-                            <Title order={2} weight={900} color={theme.colors.green[7]}>
-                                {hourlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
-                            </Title>
-                            <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                                hourly transactions
-                            </Title>
-                            <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total transaction count in the past {hours} hours
-                            </Text>
-                        </Stack>
-
-                        <LoadingOverlay visible={hourlyData.isLoading} overlayBlur={2} />
-                    </Card>
-                </Grid.Col>
-
-                <Grid.Col xl={4} lg={6} md={6} sm={12} xs={12}>
-                    <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                        <Stack align="center">
-                            <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
-                                <IconCalendarTime color={theme.colors.blue[7]} />
-                            </div>
-                            <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
-                                {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
-                            </Title>
-                            <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
-                                daily transactions
-                            </Title>
-                            <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total transaction count in the past {days} days.
-                            </Text>
-                        </Stack>
-
-                        <LoadingOverlay visible={dailyData.isLoading} overlayBlur={2} />
-                    </Card>
-                </Grid.Col>
-
-                <Grid.Col xl={4} lg={12} md={12} sm={12} xs={12}>
-                    <Card p="xl" withBorder radius="lg" sx={{position: 'relative'}}>
-                        <Stack align="center">
-                            <div className={cx(classes.icons, {[classes.iconsOrange]: true})}>
-                                <IconCalendar color={theme.colors.pink[7]} />
-                            </div>
-                            <Title order={2} weight={900} color={theme.colors.pink[7]} align="center">
-                                {monthlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
-                            </Title>
-                            <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
-                                monthly transactions
-                            </Title>
-                            <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                Total transaction count in the past {months} months
-                            </Text>
-                        </Stack>
-
-                        <LoadingOverlay visible={monthlyData.isLoading} overlayBlur={2} />
-                    </Card>
-                </Grid.Col>
-            </Grid> */}
 
             <article className={classes.section}>
                 <Group mt="xl" position='apart'>

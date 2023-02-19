@@ -107,11 +107,11 @@ const EspeesTransactions = () => {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         if(monthlyData.data && axis === 'x'){
             const res = monthlyData.data.data.map(item => months[item.TheMonth - 1]);
-            return res;
+            return res.reverse();
         }
         else if (monthlyData.data && axis === 'y'){
             const res = monthlyData.data.data.map(item => item.MonthlyTransactions);
-            return res;
+            return res.reverse();
         }
         else return []
     }

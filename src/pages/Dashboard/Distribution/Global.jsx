@@ -106,7 +106,7 @@ const GlobalDistribution = () => {
 
     return (
         <Layout title="Global Distribution">
-            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
+            <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data " color="gray" radius="md">
                 Get access to TORO transaction data for specific dates by Toro range. Simply select the start and end dates
                 you want to query as well as an amount range in Toro's. We'll handle the rest. 
             </Alert>
@@ -176,7 +176,7 @@ const GlobalDistribution = () => {
 
             {(mutation.data && mutation.status !== 'loading') ? (
                 <Card mt="xl" p="xl" withBorder radius="lg">
-                    <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution for`} radius="md">
+                    <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} TORO - ${rangeEnd} TORO`} radius="md">
                         <Text size="md" color={theme.colors.gray[7]}>
                             {mutation.data.message}
                         </Text>

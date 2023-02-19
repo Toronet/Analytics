@@ -176,18 +176,20 @@ const GlobalDistribution = () => {
 
             {(mutation.data && mutation.status !== 'loading') ? (
                 <Card mt="xl" p="xl" withBorder radius="lg">
-                    <Text mt="xl" align="center" size="md" color={theme.colors.gray[7]}>
-                        {mutation.data.message}
-                    </Text>
+                    <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution for`} radius="md">
+                        <Text size="md" color={theme.colors.gray[7]}>
+                            {mutation.data.message}
+                        </Text>
+                    </Alert>
 
                     <Space h={30} />
 
-                    <Text mb="xl" align="center">
+                    {/* <Text mb="xl" align="center">
                         Toro transaction count is: <br/>
                         <Text size={theme.fontSizes.lg * 1.8} align="Center" weight={800} color={theme.colors.pink[7]}>
                             {mutation.data.data[0].Count?.toLocaleString()}
                         </Text>
-                    </Text>
+                    </Text> */}
 
                     <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
 

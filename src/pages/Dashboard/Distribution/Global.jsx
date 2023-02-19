@@ -107,8 +107,7 @@ const GlobalDistribution = () => {
     return (
         <Layout title="Global Distribution">
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data " color="gray" radius="md">
-                Get access to transaction data for specific dates by a range in tokens. Simply select the start and end dates
-                you want to query as well as an amount range. We'll handle the rest. 
+                Get access to transaction data for all tokens by date and a predefined range in tokens.
             </Alert>
             {/* <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
                 <Grid mt={theme.spacing.xl * 2}>

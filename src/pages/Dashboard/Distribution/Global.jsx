@@ -1,12 +1,13 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
 import { useMutation } from '@tanstack/react-query';
 import { IconAlertCircle, IconSearch } from '@tabler/icons';
 import { Grid, Card, Title, Space, Text, LoadingOverlay, NumberInput, Alert, Button, Group, createStyles, useMantineTheme } from '@mantine/core';
 
-import Layout from '../../../components/Layout';
 import empty from '../../../assets/empty.png';
+import Layout from '../../../components/Layout';
+import MonthlyReport from '../../../components/Reports/MonthlyReport';
 
 import { getTransactionsCountByRange } from '../../../services/transactions';
 
@@ -28,6 +29,10 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
 }));
 
 const GlobalDistribution = () => {
+    const [rangeStart, setRangeStart] = useState(0);
+    const [rangeEnd, setRangeEnd] = useState(200);
+    const [result, setResult] = useState([]);
+
     const { classes } = useStyles();
     const theme = useMantineTheme();
 
@@ -35,8 +40,8 @@ const GlobalDistribution = () => {
         initialValues: {
             startDate: new Date('2022-08-01'),
             endDate: new Date(),
-            amountStart: 0,
-            amountEnd: 5,
+            amountStart: rangeStart,
+            amountEnd: rangeEnd,
         },
         validate: {
             startDate: (value) => (value ? null : 'Start date is required'),
@@ -47,26 +52,66 @@ const GlobalDistribution = () => {
     });
 
     useEffect(() => {
-        mutation.mutate(form.values)
+        const res = generateIntervalsOf(50, rangeStart, rangeEnd);
+        res.forEach((item, idx) => {
+            console.log(item, idx + 1)
+        });
+        //mutation.mutate(form.values)
     },[]);
+
+    const fetchDistributionData = async (interval) => {
+        const res = await mutation.mutateAsync({
+            startDate: form.values.startDate,
+            endDate: form.values.endDate,
+            amountStart: rangeStart,
+            amountEnd: interval
+        });
+        const data = res.data[0].Count;
+        setResult(prevState => [...prevState, {interval, data}].sort((a,b) => a.interval - b.interval))
+    }
+
+    const generateIntervalsOf = (interval, start, end) => {
+        const res = [];
+        let current = start;
+        while(current < end){
+            res.push(current);
+            current += interval;
+        }
+        return res;
+    }
 
     const mutation = useMutation({
         mutationFn: (payload) => getTransactionsCountByRange(payload),
-        onError: (error) => {},
-        onSuccess: (data) => {},
+        onError: (_error) => {},
+        onSuccess: (_data) => {},
         retry: 3,
     });
 
-    const handleFormSubmit = (values) => {
-        mutation.mutate(values);
-    }
+    console.log(result)
+
+    // const monthlyAxisData = (axis) => {
+    //     if(result.length && axis === 'x'){
+    //         const res = result.map(item => item.interval);
+    //         return res;
+    //     }
+    //     else if (result.length && axis === 'y'){
+    //         const res = result.map(item => item.data);
+    //         return res;
+    //     }
+    //     else return []
+    // }
+
+    // const handleFormSubmit = (values) => {
+    //     mutation.mutate(values);
+    // }
+
     return (
         <Layout title="Global Distribution">
             <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title="Get Distribution Data" color="gray" radius="md">
                 Get access to TORO transaction data for specific dates by Toro range. Simply select the start and end dates
                 you want to query as well as an amount range in Toro's. We'll handle the rest. 
             </Alert>
-            <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
+            {/* <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
                 <Grid mt={theme.spacing.xl * 2}>
                     <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
                         <DatePicker 
@@ -128,13 +173,14 @@ const GlobalDistribution = () => {
                         <Text size="sm">Search by range</Text>
                     </Button>
                 </Group>
-            </form>
+            </form> */}
 
             {(mutation.data && mutation.status !== 'loading') ? (
-                <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
+                <Card mt="xl" p="xl" withBorder radius="lg">
                     <Text mt="xl" align="center" size="md" color={theme.colors.gray[7]}>
                         {mutation.data.message}
                     </Text>
+
                     <Space h={30} />
 
                     <Text mb="xl" align="center">
@@ -142,7 +188,9 @@ const GlobalDistribution = () => {
                         <Text size={theme.fontSizes.lg * 1.8} align="Center" weight={800} color={theme.colors.pink[7]}>
                             {mutation.data.data[0].Count?.toLocaleString()}
                         </Text>
-                   </Text>
+                    </Text>
+
+                    {/* <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} /> */}
 
                     <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />
                 </Card>
@@ -150,7 +198,7 @@ const GlobalDistribution = () => {
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                     <img className={classes.empty} src={empty} alt="empty" />
                     <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>
-                        No distribution data found
+                        Under Development
                     </Title>
                     <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
                         We could not find any data matching your results. 

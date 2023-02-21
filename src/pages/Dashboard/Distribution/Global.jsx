@@ -29,8 +29,8 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
 }));
 
 const GlobalDistribution = () => {
-    const [rangeStart, setRangeStart] = useState(0);
-    const [rangeEnd, setRangeEnd] = useState(250);
+    const [rangeStart] = useState(0);
+    const [rangeEnd] = useState(500);
     const [result, setResult] = useState([]);
 
     const { classes } = useStyles();
@@ -54,21 +54,21 @@ const GlobalDistribution = () => {
     useEffect(() => {
         const res = generateIntervalsOf(50, rangeStart, rangeEnd);
         res.forEach((item) => {
-            return fetchDistributionData(item)
+            return fetchDistributionData({rangeStart: item, rangeEnd: item+50})
         });
 
         //mutation.mutate(form.values)
     },[]);
 
-    const fetchDistributionData = async (interval) => {
+    const fetchDistributionData = async (payload) => {
         const res = await mutation.mutateAsync({
             startDate: form.values.startDate,
             endDate: form.values.endDate,
-            amountStart: rangeStart,
-            amountEnd: interval
+            amountStart: payload.rangeStart,
+            amountEnd: payload.rangeEnd
         });
         const data = res.data[0].Count;
-        setResult(prevState => [...prevState, {interval, data}].sort((a,b) => a.interval - b.interval))
+        setResult(prevState => [...prevState, {...payload, data}].sort((a,b) => a.rangeStart - b.rangeEnd))
     }
 
     const generateIntervalsOf = (interval, start, end) => {
@@ -90,7 +90,7 @@ const GlobalDistribution = () => {
 
     const monthlyAxisData = (axis) => {
         if(result.length && axis === 'x'){
-            const res = result.map(item => item.interval);
+            const res = result.map(item => (`${item.rangeStart} - ${item.rangeEnd}`));
             return res;
         }
         else if (result.length && axis === 'y'){
@@ -177,7 +177,8 @@ const GlobalDistribution = () => {
                 <Card mt="xl" p="xl" withBorder radius="lg">
                     <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} TORO - ${rangeEnd} TORO`} radius="md">
                         <Text size="md" color={theme.colors.gray[7]}>
-                            {mutation.data.message}
+                            Transaction count has been queried from {new Date(form.values.startDate).toDateString()} to {" "}
+                            {new Date(form.values.endDate).toDateString()} has been queried for range {rangeStart} to {rangeEnd};
                         </Text>
                     </Alert>
 

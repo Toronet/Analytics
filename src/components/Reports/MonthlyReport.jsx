@@ -23,7 +23,19 @@ const MonthlyReport = ({categories, data}) => {
                     xaxis: {
                         categories: labels
                     },
-                    colors: ['#E64980']
+                    colors: ['#E64980'],
+                    // dataLabels: {
+                    //     enabled: true,
+                    //     textAnchor: "end",
+                    //     style: {
+                    //         colors: ['#fff']
+                    //     },
+                    //     formatter: function (_, opt){
+                    //         const name = opt.w.globals.labels[opt.dataPointIndex];
+                    //         const val = chartData[opt.dataPointIndex];
+                    //         return val ? `${name} (${val})` : '';
+                    //     }
+                    // }
                 }}
                 series={[
                     {

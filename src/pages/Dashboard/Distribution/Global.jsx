@@ -191,7 +191,7 @@ const GlobalDistribution = () => {
                         </Text>
                     </Text> */}
 
-                    <MonthlyReport categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
+                    <MonthlyReport adjustLabel categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
 
                     <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />
                 </Card>

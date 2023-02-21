@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Chart from "react-apexcharts";
 
-const MonthlyReport = ({categories, data}) => {
+const MonthlyReport = ({categories, data, adjustLabel}) => {
     const [labels, setLabels] = useState([]);
     const [chartData, setChartData] = useState([]);
 
@@ -24,6 +24,19 @@ const MonthlyReport = ({categories, data}) => {
                         categories: labels
                     },
                     colors: ['#E64980'],
+                    dataLabels: adjustLabel ? {
+                        enabled: true,
+                        formatter: function (val, _opts) {
+                            return val
+                        },
+                        offsetY: 1000,
+                        style: {
+                            fontSize: '11px',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontWeight: 800,
+                            colors: ["#E64980"]
+                        },
+                    } : {},
                     // dataLabels: {
                     //     enabled: true,
                     //     textAnchor: "end",

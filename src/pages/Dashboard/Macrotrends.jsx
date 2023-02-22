@@ -226,7 +226,7 @@ const Macrotrends = () => {
                                 <tr>
                                     <th>S/N</th>
                                     <th>Address</th>
-                                    <th>Balance</th>
+                                    <th>Balance (ESPS)</th>
                                 </tr>
                             </thead>
                             <tbody>{richListRows}</tbody>

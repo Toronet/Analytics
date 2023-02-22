@@ -12,6 +12,12 @@ export const getActiveAddresses = async (count) => {
     return res.data
 }
 
+export const getRichListAddresses = async (count) => {
+    const op = 'getrichaddresses_espees';
+    const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=count&params[0][value]=${count}&params[1][name]=countcutoff&params[1][value]=20`);
+    return res.data
+}
+
 export const getTransactionCountEspees = async (payload) => {
     const op = 'gettransactioncounts_espees';
     const res = await axios.get(`https://toronet.org/api/query?op=${op}&params[0][name]=startdate&params[0][value]=${payload.startDate}&params[1][name]=enddate&params[1][value]=${payload.endDate}`);

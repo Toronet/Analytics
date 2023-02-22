@@ -7,7 +7,7 @@ import { Grid, Card, Stack, Title, Table, Text, Alert, Button, LoadingOverlay, c
 
 import Layout from '../../components/Layout';
 
-import { getTransactionCount, getTransactionCountEspees, getTransactionCountSumsEspees, getActiveAddresses } from '../../services/macrotrends';
+import { getTransactionCount, getTransactionCountEspees, getTransactionCountSumsEspees, getActiveAddresses, getRichListAddresses } from '../../services/macrotrends';
 
 const useStyles = createStyles((theme, _params, _getRef) => ({
     icons: {
@@ -41,7 +41,7 @@ const Macrotrends = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [totalCount, totalCountEsps, totalSumEsps, activeAddr] = useQueries({
+    const [totalCount, totalCountEsps, totalSumEsps, activeAddr, richListAddr] = useQueries({
         queries: [
             {
                 queryKey: ['macrotrends-tns', currDate], 
@@ -71,14 +71,26 @@ const Macrotrends = () => {
                 queryKey: ['macrotrends-addr'], 
                 queryFn: () => getActiveAddresses(12),
             },
+            {
+                queryKey: ['macrotrends-rich-list'], 
+                queryFn: () => getRichListAddresses(12),
+            },
         ]
     });
 
-    const rows = activeAddr.data?.data.map((item, index) => (
+    const rows = activeAddr.data?.data.sort((a, b) => b.TransactionCount - a.TransactionCount).map((item, index) => (
         <tr key={`${item.TheAddress}-${index}`}>
             <td>{index+1}</td>
             <td>{item.TheAddress}</td>
             <td>{item.TransactionCount}</td>
+        </tr>
+    ));
+
+    const richListRows = richListAddr.data?.data.sort((a, b) => b.TotalBalance - a.TotalBalance).map((item, index) => (
+        <tr key={`${item.TheAddress}-${index}`}>
+            <td>{index+1}</td>
+            <td>{item.TheAddress}</td>
+            <td>{item.TotalBalance.toLocaleString()}</td>
         </tr>
     ));
 
@@ -182,7 +194,7 @@ const Macrotrends = () => {
                         <LoadingOverlay visible={totalSumEsps.isLoading} overlayBlur={2} />
                     </Card>
                 </Grid.Col>
-           </Grid>
+            </Grid>
 
             <article className={classes.section}>
                 <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
@@ -198,6 +210,26 @@ const Macrotrends = () => {
                                 </tr>
                             </thead>
                             <tbody>{rows}</tbody>
+                        </Table>
+
+                        <LoadingOverlay visible={activeAddr.isLoading} overlayBlur={2} />
+                </Card>
+            </article>
+
+            <article className={classes.section}>
+                <Title order={5} weight={800} color={theme.colors.gray[7]} transform="uppercase">
+                    Top rich list addresses
+                </Title>
+                <Card p="xl" mt="xl" withBorder radius="lg" className={classes.card} sx={{minHeight: '15rem'}}>
+                        <Table fontSize="sm" striped highlightOnHover horizontalSpacing="xl" verticalSpacing="sm">
+                            <thead>
+                                <tr>
+                                    <th>S/N</th>
+                                    <th>Active Address</th>
+                                    <th>Transaction Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>{richListRows}</tbody>
                         </Table>
 
                         <LoadingOverlay visible={activeAddr.isLoading} overlayBlur={2} />

@@ -225,7 +225,7 @@ const Macrotrends = () => {
                             <thead>
                                 <tr>
                                     <th>S/N</th>
-                                    <th>Active Address</th>
+                                    <th>Address</th>
                                     <th>Balance</th>
                                 </tr>
                             </thead>

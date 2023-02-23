@@ -128,9 +128,9 @@ const GlobalDistribution = () => {
         else return []
     }
 
-    const handleFormSubmit = (values) => {
-        mutation.mutate(values);
-    }
+    // const handleFormSubmit = (values) => {
+    //     mutation.mutate(values);
+    // }
 
     return (
         <Layout title="Global Distribution">

@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
 import { useMutation } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { Grid, Card, Title, Space, Text, NumberInput, LoadingOverlay, Alert, But
 
 import Layout from '../../../components/Layout';
 import empty from '../../../assets/empty.png';
+import MonthlyReport from '../../../components/Reports/MonthlyReport';
 
 import { getEspeesTransactionsCountByRange } from '../../../services/transactions';
 
@@ -28,6 +29,10 @@ const useStyles = createStyles((theme, _params, _getRef) => ({
 }));
 
 const EspeesDistribution = () => {
+  const [rangeStart] = useState(0);
+  const [rangeEnd] = useState(500);
+  const [result, setResult] = useState([]);
+
   const { classes } = useStyles();
   const theme = useMantineTheme();
 
@@ -35,8 +40,8 @@ const EspeesDistribution = () => {
     initialValues: {
       startDate: new Date('2022-08-01'),
       endDate: new Date(),
-      amountStart: 0,
-      amountEnd: 5,
+      amountStart: rangeStart,
+      amountEnd: rangeEnd,
     },
     validate: {
       startDate: (value) => (value ? null : 'Start date is required'),
@@ -47,8 +52,51 @@ const EspeesDistribution = () => {
   });
 
   useEffect(() => {
+    const multiplier = ( rangeEnd / 100 )
+    //const res = generateIntervalsOf(multiplier, rangeStart, rangeEnd);
+    const res = [
+        {
+            start: rangeStart,
+            end: multiplier,
+        },
+        {
+            start: rangeStart * multiplier,
+            end: multiplier * multiplier,
+        },
+        {
+            start: 25,
+            end: 100
+        },
+        {
+            start: 100,
+            end: 250,
+        },
+        {
+            start: 250,
+            end: 500,
+        },
+        {
+            start: 500,
+            end: 1000000000000000
+        }
+    ];
+    res.forEach((item) => {
+        return fetchDistributionData({rangeStart: item.start, rangeEnd: item.end})
+    });
+
     mutation.mutate(form.values)
   },[]);
+
+  const fetchDistributionData = async (payload) => {
+    const res = await mutation.mutateAsync({
+        startDate: form.values.startDate,
+        endDate: form.values.endDate,
+        amountStart: payload.rangeStart,
+        amountEnd: payload.rangeEnd
+    });
+    const data = res.data[0].Count;
+    setResult(prevState => [...prevState, {...payload, data}].sort((a,b) => a.rangeEnd - b.rangeEnd))
+  }
 
   const mutation = useMutation({
     mutationFn: (payload) => getEspeesTransactionsCountByRange(payload),
@@ -57,9 +105,21 @@ const EspeesDistribution = () => {
     retry: 3,
   });
 
-  const handleFormSubmit = (values) => {
-    mutation.mutate(values);
+  const monthlyAxisData = (axis) => {
+    if(result.length && axis === 'x'){
+        const res = result.map(item => (`${item.rangeStart} - ${item.rangeEnd}`));
+        return res;
+    }
+    else if (result.length && axis === 'y'){
+        const res = result.map(item => item.data);
+        return res;
+    }
+    else return []
   }
+
+  // const handleFormSubmit = (values) => {
+  //   mutation.mutate(values);
+  // }
 
   return (
     <Layout title="Espees Distribution">
@@ -68,7 +128,7 @@ const EspeesDistribution = () => {
         you want to query as well as an amount range in Espees. We'll handle the rest. 
       </Alert>
 
-      <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
+      {/* <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
         <Grid mt={theme.spacing.xl * 2}>
           <Grid.Col xl={3} lg={3} md={3} sm={6} xs={12}>
             <DatePicker 
@@ -130,21 +190,30 @@ const EspeesDistribution = () => {
             <Text size="sm">Search by range</Text>
           </Button>
         </Group>
-      </form>
+      </form> */}
 
       {(mutation.data && mutation.status !== 'loading') ? (
-        <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
-          <Text mt="xl" align="center" size="md" color={theme.colors.gray[7]}>
+        <Card mt="xl" p="xl" withBorder radius="lg">
+          {/* <Text mt="xl" align="center" size="md" color={theme.colors.gray[7]}>
             {mutation.data.message}
-          </Text>
+          </Text> */}
+          <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} - ${rangeEnd}`} radius="md">
+            <Text size="md" color={theme.colors.gray[7]}>
+              Transaction count has been queried from {new Date(form.values.startDate).toDateString()} to {" "}
+              {new Date(form.values.endDate).toDateString()} for the ranges: {rangeStart}Espees to {rangeEnd}Espees;
+            </Text>
+          </Alert>
+
           <Space h={30} />
 
-          <Text mb="xl" align="center">
+          {/* <Text mb="xl" align="center">
             Espees transaction count is: <br/>
             <Text size={theme.fontSizes.lg * 1.8} align="Center" weight={800} color={theme.colors.pink[7]}>
               {mutation.data.data[0].Count?.toLocaleString()}
             </Text>
-          </Text>
+          </Text> */}
+
+          <MonthlyReport adjustLabel categories={monthlyAxisData('x')} data={monthlyAxisData('y')} />
 
           <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />
         </Card>

@@ -27,13 +27,13 @@ const MonthlyReport = ({categories, data, adjustLabel}) => {
                     dataLabels: adjustLabel ? {
                         enabled: true,
                         formatter: function (val, _opts) {
-                            return val
+                            return val.toLocaleString()
                         },
-                        offsetY: 1000,
+                        offsetY: 20000,
                         style: {
-                            fontSize: '11px',
+                            fontSize: '13px',
                             fontFamily: 'Poppins, sans-serif',
-                            fontWeight: 800,
+                            fontWeight: 500,
                             colors: ["#E64980"]
                         },
                     } : {},

@@ -197,10 +197,10 @@ const EspeesDistribution = () => {
           {/* <Text mt="xl" align="center" size="md" color={theme.colors.gray[7]}>
             {mutation.data.message}
           </Text> */}
-          <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} - ${rangeEnd}`} radius="md">
+          <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} ESPEES - ${rangeEnd} ESPEES`} radius="md">
             <Text size="md" color={theme.colors.gray[7]}>
               Transaction count has been queried from {new Date(form.values.startDate).toDateString()} to {" "}
-              {new Date(form.values.endDate).toDateString()} for the ranges: {rangeStart}Espees to {rangeEnd}Espees;
+              {new Date(form.values.endDate).toDateString()} for the ranges: {rangeStart} to {rangeEnd};
             </Text>
           </Alert>
 

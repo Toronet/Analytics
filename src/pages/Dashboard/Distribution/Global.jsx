@@ -52,12 +52,39 @@ const GlobalDistribution = () => {
     });
 
     useEffect(() => {
-        const res = generateIntervalsOf(50, rangeStart, rangeEnd);
+        const multiplier = ( rangeEnd / 100 )
+        //const res = generateIntervalsOf(multiplier, rangeStart, rangeEnd);
+        const res = [
+            {
+                start: rangeStart,
+                end: multiplier,
+            },
+            {
+                start: rangeStart * multiplier,
+                end: multiplier * multiplier,
+            },
+            {
+                start: 25,
+                end: 100
+            },
+            {
+                start: 100,
+                end: 250,
+            },
+            {
+                start: 250,
+                end: 500,
+            },
+            {
+                start: 500,
+                end: 1000000000000000
+            }
+        ];
         res.forEach((item) => {
-            return fetchDistributionData({rangeStart: item, rangeEnd: item+50})
+            return fetchDistributionData({rangeStart: item.start, rangeEnd: item.end})
         });
 
-        //mutation.mutate(form.values)
+        mutation.mutate(form.values)
     },[]);
 
     const fetchDistributionData = async (payload) => {
@@ -68,18 +95,19 @@ const GlobalDistribution = () => {
             amountEnd: payload.rangeEnd
         });
         const data = res.data[0].Count;
-        setResult(prevState => [...prevState, {...payload, data}].sort((a,b) => a.rangeStart - b.rangeEnd))
+        setResult(prevState => [...prevState, {...payload, data}].sort((a,b) => a.rangeEnd - b.rangeEnd))
     }
 
-    const generateIntervalsOf = (interval, start, end) => {
-        const res = [];
-        let current = start;
-        while(current < end){
-            res.push(current);
-            current += interval;
-        }
-        return res;
-    }
+    // const generateIntervalsOf = (multiplier, start, end) => {
+    //     const res = [];
+    //     let current = start;
+    //     while(current < end){
+    //         res.push(current);
+    //         if(current === 0) current = current + multiplier;
+    //         else current = current * multiplier;
+    //     }
+    //     return res;
+    // }
 
     const mutation = useMutation({
         mutationFn: (payload) => getTransactionsCountByRange(payload),
@@ -100,9 +128,9 @@ const GlobalDistribution = () => {
         else return []
     }
 
-    // const handleFormSubmit = (values) => {
-    //     mutation.mutate(values);
-    // }
+    const handleFormSubmit = (values) => {
+        mutation.mutate(values);
+    }
 
     return (
         <Layout title="Global Distribution">
@@ -175,7 +203,7 @@ const GlobalDistribution = () => {
 
             {(mutation.data && mutation.status !== 'loading') ? (
                 <Card mt="xl" p="xl" withBorder radius="lg">
-                    <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} TORO - ${rangeEnd} TORO`} radius="md">
+                    <Alert p="lg" icon={<IconAlertCircle size={16} />} mb="xl" title={`Global Distribution from ${rangeStart} - ${rangeEnd}`} radius="md">
                         <Text size="md" color={theme.colors.gray[7]}>
                             Transaction count has been queried from {new Date(form.values.startDate).toDateString()} to {" "}
                             {new Date(form.values.endDate).toDateString()} for the ranges: {rangeStart} to {rangeEnd};
@@ -199,11 +227,11 @@ const GlobalDistribution = () => {
                 <Card mt="xl" p="xl" withBorder radius="lg" className={classes.emptyWrapper}>
                     <img className={classes.empty} src={empty} alt="empty" />
                     <Title order={4} mb="sm" color={theme.colors.gray[7]} weight={700}>
-                        Under Development
+                        No distribution data found
                     </Title>
                     <Text w="40%" align='center' mb="xl" size="sm" color={theme.colors.gray[6]}>
-                        This page is currently under development at the moment. Please check
-                        back later.
+                        We could not find any data matching your results. 
+                        Please check your query and try again.
                     </Text>
 
                     <LoadingOverlay visible={mutation.isLoading} overlayBlur={2} />

@@ -60,7 +60,7 @@ const GlobalDistribution = () => {
                 end: multiplier,
             },
             {
-                start: rangeStart * multiplier,
+                start: 5,
                 end: multiplier * multiplier,
             },
             {
@@ -118,7 +118,7 @@ const GlobalDistribution = () => {
 
     const monthlyAxisData = (axis) => {
         if(result.length && axis === 'x'){
-            const res = result.map(item => (`${item.rangeStart} - ${item.rangeEnd}`));
+            const res = result.map(item => (`${item.rangeStart} - ${item.rangeEnd > 500 ? '500+' : item.rangeEnd}`));
             return res;
         }
         else if (result.length && axis === 'y'){

@@ -176,12 +176,12 @@ const GlobalTransactions = () => {
                         <Title order={2} weight={900} color={theme.colors.green[7]}>
                             {hourlyAxisData('y').reduce((acc, curr) => acc + curr, 0)?.toLocaleString()}
                         </Title>
-                        <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
-                            hourly transactions
-                        </Title>
-                        <Text size="sm" color={theme.colors.gray[7]} align="center">
+                        <Text transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
                             Total transaction count in the past {hours} hours
                         </Text>
+                        {/* <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]} align="center">
+                            hourly transactions
+                        </Title> */}
                     </Stack>
 
                     <LoadingOverlay visible={hourlyData.isLoading} overlayBlur={2} />
@@ -222,15 +222,15 @@ const GlobalTransactions = () => {
                                 <div className={cx(classes.icons, {[classes.iconsBlue]: true})}>
                                     <IconCalendarTime color={theme.colors.blue[7]} />
                                 </div>
+                                <Text size="sm" color={theme.colors.gray[7]} align="center">
+                                    Total transaction count in the past {days} days.
+                                </Text>
                                 <Title order={2} weight={900} color={theme.colors.blue[7]} align="center">
                                     {dailyData.data ? dailyData.data.data.reduce((acc, curr) => acc + curr.DailyTransactions, 0)?.toLocaleString() : 0}
                                 </Title>
                                 <Title transform='uppercase' order={5} weight={900} color={theme.colors.gray[7]}>
                                     daily transactions count
                                 </Title>
-                                <Text size="sm" color={theme.colors.gray[7]} align="center">
-                                    Total transaction count in the past {days} days.
-                                </Text>
                             </Stack>
 
                             <LoadingOverlay visible={dailyData.isLoading} overlayBlur={2} />

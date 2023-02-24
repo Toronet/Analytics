@@ -118,7 +118,7 @@ const GlobalDistribution = () => {
 
     const monthlyAxisData = (axis) => {
         if(result.length && axis === 'x'){
-            const res = result.map(item => (`${item.rangeStart} - ${item.rangeEnd > 500 ? '500+' : item.rangeEnd}`));
+            const res = result.map(item => (`${item.rangeStart === 500 ? '500+' : item.rangeStart} ${item.rangeStart < 500 ? '-' : ''} ${item.rangeEnd > 500 ? '' : item.rangeEnd}`));
             return res;
         }
         else if (result.length && axis === 'y'){
